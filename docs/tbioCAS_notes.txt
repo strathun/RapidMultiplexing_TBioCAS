@@ -1,0 +1,6 @@
+
+Ideally, we would be able to show well isolated action potentials from each of the multiplexed channels. However, the multitude of effects from factors unrelated to the multiplexing chip (array mechanical quality, immune response, neural density) make it difficult to properly asses the quality of the recordings fromthis device. In order to mitigate some of these uncertainties, we show comparisons to a commercially available recording system (Ripple). Presented in Fig. XX are exemplary recordings from (5 channels) that showed the most significant and consistent (neural activity) across both systems. 
+
+One consideration for the in vivo data presented here is that the TDT microwire arrays have relatively low impedance compared to other microwire arrays. Low impedance electrodes have been shown to (have a lower SNR in general, due to the larger recording volume sampled by each electrode). Even nearby action potentials are expected to have smaller voltage deflections than a higher impedance electrode recording measuring the same currents. This is evident from Ohm's law. Therefore, one might consider the results presented here as a worst case scenario. 
+	NVM, this may all be wrong. See highlighted sections in discussion (Neto et al. 2018).
+		Suggest you not worry about impedance magnitude (specifically at 1 kHz) so long as you 
