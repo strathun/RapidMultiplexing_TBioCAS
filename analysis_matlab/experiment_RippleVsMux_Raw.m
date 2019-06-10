@@ -62,6 +62,8 @@ for ii = 1:numChannelsRip
     dataStructure(ii).instrument = 'Ripple';
     dataStructure(ii).electrode = ii;
     dataStructure(ii).time = timeRipple;
+    dataStructure(ii).pkpk = peak2peak( dataStructure(ii).filteredData );
+    dataStructure(ii).stdDev = std( dataStructure(ii).filteredData );
 end
 
 % Mux
@@ -81,6 +83,8 @@ for ii = ( numChannelsRip + 1 ):( numChannelsRip + numChannelsMux )
     dataStructure(ii).instrument = 'Mux';
     dataStructure(ii).electrode = muxChannelOrder( muxIndex );
     dataStructure(ii).time = timeMux;
+    dataStructure(ii).pkpk = peak2peak( dataStructure(ii).filteredData );
+    dataStructure(ii).stdDev = std( dataStructure(ii).filteredData );
 end
 
 %% Plotting data
@@ -91,9 +95,11 @@ for ii = 1:totalChannels
 %     plot(dataStructure(ii).time, dataStructure(ii).rawData);
 %     hold on
     plot(dataStructure(ii).time, dataStructure(ii).filteredData);
-    titleStr = sprintf('Electrode_%d_Instrument_%s', ...
+    titleStr = sprintf('Electrode_%d_Instrument_%s_PkPk_%.0f_StdDev_%.0f', ...
                       dataStructure(ii).electrode, ...
-                      dataStructure(ii).instrument);
+                      dataStructure(ii).instrument, ...
+                      dataStructure(ii).pkpk, ...
+                      dataStructure(ii).stdDev);
     title(titleStr, 'Interpreter', 'none')
     hold on
 end

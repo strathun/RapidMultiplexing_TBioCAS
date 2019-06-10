@@ -1,0 +1,29 @@
+%% PlotScript: Plotting sinusoid inputs to mux
+% This will be used to get a general idea of how a KNOWN signal looks in
+% the mux and how this changes at different multiplexing factors, 
+% as well as calculate some specifics like gain factor.
+
+close all 
+clearvars 
+
+% Sets relative filepaths from this script
+currentFile = mfilename( 'fullpath' );
+cd(fileparts(currentFile));
+addpath(genpath('../matlab'));
+addpath(genpath('../rawData'));
+addpath(genpath('../output'));
+parts = strsplit(currentFile, {'\', '\'});
+outputDir = ['../output/' parts{end}];
+[~, ~] = mkdir(outputDir);
+
+muxFileName    = '2019_5_29_12_38_2_8_2097152_15_8_7_0_2_5_1_6_smpls_raw.mat';
+
+% Mux Data
+[muxChannelOrder] = muxChannelGrabber(muxFileName); % Gets channels from filename
+numChannelsMux = length(muxChannelOrder);
+[ Vordered, timeMux, FsMux ] = ...
+    muxGetRaw( muxFileName, 600e3, numChannelsMux, 'downSampleOffset',0, ...
+               'downSampleTrigger', 0, 'averageSampleTrigger', 0);
+VMux = meanSubtraction(Vordered);   % Remove DC offsets
+% VMux = comAvgRef(Vordered);
+% VMux = Vordered;

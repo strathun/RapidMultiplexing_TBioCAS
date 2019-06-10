@@ -7,4 +7,5 @@
 	
 	Things I'm hoping to understand a little better today: 
 		Why do the LFP/Raw low frequency amplitudes seem to match pretty well after adjusting the new gain factor, but the 'action potentials' I'm detecting are even higher amplitude than before, and importantly, quite a bit higher than the Ripple's detected action potentials. 
+			NOTE: Mohit said that the gain factor may actually be even higher (up to 2.5?) than the new 2.2 value he gave me on 06/06.
 		
