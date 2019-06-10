@@ -1,6 +1,8 @@
 
 2019-06-10
 	
+	Directions: Last week or so I've been focusing on trying to understand and even correct the disagreements between LFP/Raw data in mux and Ripple. Now that I see better agreement here, I will shift a bit toward action potentials again.
+	
 	Created github repository for rapid mux codebase. 
 
 	Just talked with Mohit; he's still struggling to understand why exactly the noise is so much higher than expected. Even when trying to record from a resistor. He said that using the ground of the daughterboard when measuring with the inputs shorted to ground does result in a noise level closer to what he expects, but this decrease hasn't been recreated when measuring a resistor. One reason for this he explains, is that measuring the resistors using the daughterboard's ground requires some gross flying wires that may be causing problems.
