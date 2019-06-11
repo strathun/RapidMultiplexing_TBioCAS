@@ -1,4 +1,15 @@
+__________
+2019-06-11
 
+	Directions: Concrete investigations into action potential shapes. Assist Mohit with noise/impedance measurements? Possibly do a new array?
+	
+	Lempka_2011: Larger recording bandwidths were found to increase thermal noise AS WELL AS SIGNAL AMPLITUDE. Possible this is what is going on with Mux (larger threshold crossing events)?
+	
+	Did a preliminary experiment on the effect of multiplexing factor on action potential shape. Will need to dig a bit further since there does seem to be some differences between channels. One other thing to look into is to look at an M2 channel versus its M20 counterpart, but for the M2 instead of subsampling, treat all the extra samples as a different channel and see how they compare. 
+	
+	Set up a new array (TDT18) for Mohit to continute in vitro tests. TDTMoh might be retired. Tried a couple of different headstages to try and get better grounded input measurements. Still seem to be some difficulties here. Grounded inputs in some cases are higher than electrode recordings from the same channel. This was with TDTMoh though... Might improve with TDT18. 
+
+__________
 2019-06-10
 	
 	Directions: Last week or so I've been focusing on trying to understand and even correct the disagreements between LFP/Raw data in mux and Ripple. Now that I see better agreement here, I will shift a bit toward action potentials again.

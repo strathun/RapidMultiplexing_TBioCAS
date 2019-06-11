@@ -1,6 +1,6 @@
 %% PlotScript: Plotting sinusoid inputs to mux
 % This will be used to get a general idea of how a KNOWN signal looks in
-% the mux and how this changes at different multiplexing factors, 
+% the mux and how this changes at different multiplexing factors,
 % as well as calculate some specifics like gain factor.
 
 close all 

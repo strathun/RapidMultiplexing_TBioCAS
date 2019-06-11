@@ -1,7 +1,11 @@
-%% Investigating Effects of Filter bandwidth
-% Primary goal is to understand filter effects on action potential shape.
-% Secondary goal is to determine how we should be filtering our data.
+%% Investigating Effects of Filter bandwidth on Ripple
+% Primary goal is to understand filter effects on action potential shape
+% for the Ripple. My previous experiments here have shown that it
+% significantly affects the shape of the Mux action potentials, but I'm
+% curious if the effects are as dramatic with the Ripple system that has a
+% much more narrow bandwidth.
 
+close all 
 clearvars 
 
 % Sets relative filepaths from this script
@@ -9,15 +13,24 @@ currentFile = mfilename( 'fullpath' );
 cd(fileparts(currentFile));
 addpath(genpath('../matlab'));
 addpath(genpath('../rawData'));
-numChannels = 16;
+addpath(genpath('../output'));
+parts = strsplit(currentFile, {'\', '\'});
+outputDir = ['../output/' parts{end}];
+[~, ~] = mkdir(outputDir);
 
 %% Load Experimental Data
-% Will be looking at data recorded under isoflurane with a multiplexing
-% factor of 4.
-[ Vordered, time, Fs ] = ...
-    muxGetRaw( '2019_5_15_12_12_0_4_2097152_13_14_9_5_smpls_raw.mat', ...
-    600e3, numChannels, 'downSampleOffset',0 );
-VorderedMF4 = meanSubtraction(Vordered);
+
+rippleFileName = 'SD190509A_Day20_Ketamine_20190529_1144.ns5';
+Fs = 30e3;
+
+% Ripple Data. Ripple uses .25 uV per bit. Data comes in as bits. Here
+% we're leaving units as uV [mini function candidate]
+[ NSxFileArray, NSxbasicHeader, NSxchannelHeader, NSxTimeStamps ] = ...
+    NSxGetMemMapFile( rippleFileName );
+rawdata = NSxFileArray.Data.NSxData;
+V = double( rawdata );
+timeRipple = double( NSxTimeStamps ) / 30000;
+VRipple = ( V  )/4;
 
 %% Filtering Data
 % Here, we are plotting the mean detected waveform for 6 different low pass
@@ -32,10 +45,11 @@ for jj = 1:6
         6000;
         7000];
     lowPassCornerArray = flip(lowPassCornerArray);  % Plot looks nicer
-    [ dataFilt ] = filterFunc(VorderedMF4, 30e3, 3, ...
-                   'highPassCorner', 750, 'lowPassCorner', lowPassCornerArray(jj)); 
+    [ dataFilt ] = filterFunc( VRipple, 30e3, 3, ...
+                   'highPassCorner', 750, ...
+                   'lowPassCorner', lowPassCornerArray(jj) ); 
     figure(1)
-    plot(time, dataFilt(1,:));
+    plot(timeRipple, dataFilt(1,:));
     hold on
 
 %% Spike Sorting
@@ -43,7 +57,7 @@ for jj = 1:6
     threshold = -3.5;
     rejectMod =    2;
     ARP       = .001;
-
+    [numChannels, ~] = size( dataFilt );
     for ii = 1:numChannels
         [spikesIndex, threshVal] = spike_detection(dataFilt(ii,:),threshold,1,0);
         [waveforms{ii}, timeWave, spikesIndex] = ...
@@ -77,6 +91,6 @@ for ii = 1:numChannels
 end
 
 %%
-% It's pretty clear that the low pass corner has a signficant effect on
-% waveform shape. The lower the corner, or smaller the bandwidth, the wider
-% trough and the smaller the amplitude. 
+% The lowpass corner does appear to have an effect for the Ripple as well.
+% However, it does not seem to be as significant until it is at least less
+% than the 4.9 kHz corner of the Ripple system. 
