@@ -102,6 +102,8 @@ for ii = 1:totalChannels
                       3 * dataStructure(ii).stdDev);
     title(titleStr, 'Interpreter', 'none')
     hold on
+    xlabel('Time (s)')
+    ylabel('Amplitude (uV)')
 end
 
 %%

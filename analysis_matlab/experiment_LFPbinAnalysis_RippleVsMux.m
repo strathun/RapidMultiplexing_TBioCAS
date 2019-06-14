@@ -16,6 +16,8 @@
 close all 
 clearvars 
 currentFile = mfilename( 'fullpath' );
+cd(fileparts(currentFile));
+addpath(genpath('../matlab'));
 [ outputDir ] = initializeScript( currentFile );
 
 muxFileName    = '2019_5_29_12_38_2_8_2097152_15_8_7_0_2_5_1_6_smpls_raw.mat';
@@ -38,18 +40,19 @@ VMux = meanSubtraction(Vordered);   % Remove DC offsets
 % VMux = Vordered;
 
 %% Decimating samples from 30 or 37.5 down to 2 or 2.5 kHz
-decimationFactor = 15;
+decimationFactorRipple = 15;
+decimationFactorMux = floor(FsMux / 2e3);
 for ii = 1:16
-    VRipple_Dec(ii,:) = decimate( VRipple(ii,:), decimationFactor );
+    VRipple_Dec(ii,:) = decimate( VRipple(ii,:), decimationFactorRipple );
 end
 for ii = 1:numChannelsMux
-    VMux_Dec(ii,:) = decimate( VMux(ii,:), decimationFactor );
+    VMux_Dec(ii,:) = decimate( VMux(ii,:), decimationFactorMux );
 end
 
 %% Filter Data
 % Data from both instruments is stored in a single data structure 
 % Ripple
-FsRipple = 30e3 / decimationFactor;
+FsRipple = 30e3 / decimationFactorRipple;
 [ dataFiltRipple ] = filterFunc(VRipple_Dec, FsRipple, 3, ...
                'highPassCorner', hpCornerFreq, ...
                'lowPassCorner', lpCornerFreq);
@@ -65,7 +68,7 @@ for ii = 1:numChannelsRip
 end
 
 % Mux
-FsMux = FsMux / decimationFactor;
+FsMux = FsMux / decimationFactorMux;
 [ dataFiltMux ] = filterFunc(VMux_Dec, FsMux, 3, ...
                'highPassCorner', hpCornerFreq, ...
                'lowPassCorner', lpCornerFreq);
@@ -93,17 +96,56 @@ for ii = 1:totalNumChannels
     dataStructure(ii).fftFreq = f;
 end
 
+%% Histogram of FFT
+% Bins will be Delta, Theta, Alpha, Beta, Gamma, 100-300?. First we have to
+% find the correct indices in the frequency vector and then sum over those
+% ranges in the power vector.
+binEdges = [ .4 4 8 12 20 100 300 ];
+binLabels = categorical({'.4 - 4', '4 - 8', '8 - 12', '13 - 20',... 
+                         '20 - 100', '100 - 300'});
+for ii = 1:totalNumChannels
+    dataStructure(ii).binEdgesIndex = [];
+    for jj = 1:length( binEdges )
+        searchVal = binEdges( jj );
+        [ d, ix ] = min( abs( dataStructure(ii).fftFreq - searchVal ) );    % Finds closest value
+        dataStructure(ii).binEdgesIndex = [ dataStructure(ii).binEdgesIndex ix];
+        % Add the next index position for the starting edge of the
+        % following bin if not the first or last values. Think about it.
+        if jj > 1 && jj < length( binEdges )
+            dataStructure(ii).binEdgesIndex = [ dataStructure(ii).binEdgesIndex (ix + 1)];
+        end
+    end
+    dataStructure(ii).binEdgesIndex = sort( dataStructure(ii).binEdgesIndex );
+    startSumIndex = 1;  % Ugly variable to make the summing below work correctly
+    for kk = 1:( length( dataStructure(ii).binEdgesIndex ) ) / 2
+        startIndex = dataStructure(ii).binEdgesIndex( startSumIndex );
+        stopIndex = dataStructure(ii).binEdgesIndex( startSumIndex + 1 );
+        tempCumSum = cumtrapz( dataStructure(ii).fftFreq( startIndex: ...
+                               stopIndex), ...
+                         dataStructure(ii).fft( startIndex:stopIndex ) );
+        dataStructure(ii).binPower( kk ) = tempCumSum(end);
+        startSumIndex = startSumIndex + 2;
+    end
+    totalCumSum = cumtrapz( dataStructure(ii).fftFreq, ...
+                         dataStructure(ii).fft );
+    dataStructure(ii).totalPower = totalCumSum(end);
+    figure( 100 + dataStructure(ii).electrode )
+    % Plotting normalized power
+    b = bar( binLabels, ( dataStructure(ii).binPower )./ dataStructure(ii).totalPower );
+    hold on
+    b.FaceAlpha = 0.2;
+    legend( 'Ripple', 'Mux' )
+end
+
 %% Plotting
 for ii = 1:totalNumChannels
     figure( dataStructure(ii).electrode )
     loglog( dataStructure(ii).fftFreq, dataStructure(ii).fft )
     hold on
-    ylabel( 'Amplitude?' )
+    ylabel( 'Power (uV^2/Hz)' )
     xlabel( 'Frequency (Hz)' )
     titleStr = sprintf('Electrode_%d', ...
                   dataStructure(ii).electrode );
     title(titleStr, 'Interpreter', 'none')
     legend('Ripple', 'Mux')
 end
-
-%% Histogram of fft data. 

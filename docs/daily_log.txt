@@ -1,6 +1,17 @@
 
 __________
 2019-06-12
+
+	Directions: 
+		_ Finish the experiment looking at normalized LFP power. 
+		_ Dig into the sinusoid measurements a little bit more. Have an idea of what's going on here for meeting with Ross
+		
+	Met with Ross (see today's date in notebook for notes). 
+	
+	Will focus on making a splitter in this interim time. 
+	Also, do different filters of LFP bands and look at time domain data. See notebooks for other notes as well. 
+__________
+2019-06-12
 	
 	NOTE: Shifting back to LFP analysis. Was hoping to start building up infrastructure that could be used when we eventually do get to this paper. Also, will help diagnose things now. 
 	
