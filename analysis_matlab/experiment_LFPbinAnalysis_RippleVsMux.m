@@ -11,6 +11,9 @@
 % frequency contributions for each system. 
 %%
 % Improvements to make: subtract out instrument power!
+% Moving forward: Make a new experiment that filters signal in different
+% bins, then compare the time domain signals. Add things like std deviation
+% and pk-pk, similar to the other raw experiment. 
 
 % Initialize and set relative filepaths FROM THIS script
 close all 
@@ -96,7 +99,7 @@ for ii = 1:totalNumChannels
     dataStructure(ii).fftFreq = f;
 end
 
-%% Histogram of FFT
+%% Bar Graph of FFT
 % Bins will be Delta, Theta, Alpha, Beta, Gamma, 100-300?. First we have to
 % find the correct indices in the frequency vector and then sum over those
 % ranges in the power vector.

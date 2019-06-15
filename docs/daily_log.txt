@@ -1,6 +1,20 @@
 
 __________
-2019-06-12
+2019-06-14
+
+	Directions: 
+		_Going to take a break from some of the signal analysis to make the two-way omnetics splitter. 
+		_Update LFP experiment with directions Ross suggested (see this log -> yesterday and notebook to reorient in the future).
+
+	Lab meeting with Dave back in town
+		Suggested some sort of button or something on the splitter so that we can synchronize between recording instruments. However, because of the nature of Mohit's recording, some signal will probably have to come from him that will then go to Mux and Ripple.
+		
+	Made some measurements with Tye's headstage (new HS) and using an oscilloscope. Got these to match up with gamry measurements taken using the same electrode array after taking new grounded noise measurements with the oscilloscope and deembedding this. 
+	
+	We brought up an omnetics to 100 mil?? connector so that Mohit could take resistor measurements to try and simplify the problem. These agreed much better with the impedance predicted noise ( I think he used a 1kOhm resistor ). This to me is suggesting that something fishy is happening with the more complex electrodes (i.e. capacitance...). Will try measuring an RC circuit and see if we can pinpoint the weirdness. 
+		
+__________
+2019-06-13
 
 	Directions: 
 		_ Finish the experiment looking at normalized LFP power. 
@@ -10,6 +24,7 @@ __________
 	
 	Will focus on making a splitter in this interim time. 
 	Also, do different filters of LFP bands and look at time domain data. See notebooks for other notes as well. 
+	
 __________
 2019-06-12
 	
