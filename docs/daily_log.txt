@@ -1,3 +1,60 @@
+__________
+2019-06-24
+
+	Directions: Finish splitter board. Unshielded measurements with Tye's board
+	
+	Updates, Mohit: 
+		Sounds like still haven't solved the noise problem. Wants to try taking unshielded measurements with Tye's board to see if there is an increase in the noise floor like he is seeing with the mux vs just increase in tones. If there is an increase in the floor, maybe we can solve the mux noise issues with better shielding/grounding. Otherwise, it's unclear how to move forward.
+		
+	Connecting the output of the PXIe to earth ground looks to have removed some interesting high frequency noise components we detected while running Tye's board at higher frequencies (to 600e3). Unfortunately, this didn't seem to do much at first pass for the noise in Mohit's measurements.
+	
+	Finished splitter board. 
+__________
+2019-06-21
+
+	Directions: Finish building up splitter board.
+	
+	Didn't quite get it done. Had some trouble connecting all 3 boards. Might have to get creative.
+__________
+2019-06-20
+
+	Directions: Had a brief meeting with Ross yesterday before leaving. Recommended a paper that may help me understand differences beteween LFP and action potential amplitudes with the Mux. Try looking into this some today. Also, try to get started on building up the board.
+__________
+2019-06-19
+
+	Directions: Finialize stuff with the splitter. Think about some LFP problems to look into from meeting with Ross last week. 
+	
+	Updates from Mohit: 
+		As before, grounding directly at the daughter board seems to give the best deembedding results (~80% of grounded measurements look good).
+		RC model measurements do recreate the "humps" in his signal. 
+		Built new daughterboard with through hole omnetics connector. Did not seem to solve all the problems. 
+		Doesn't think that wideband increase in noise would be coming from any digital components. He's pretty sure that none of the digital components are even active when the actual sampling is taking place. 
+		He plans to meet with Ross to discuss some of these things.
+	2nd Mohit update: 
+		Better shielding (alluminum wrapping) seemed to help...
+	
+	Pivoting. Pcbway can't do the through hole pin spacing we need. Tye found 3 seperate omnetics boards with 100 mil pins that I'm going to Frankenstein together into an adapter board. No longer going to be making new boards :(. I did get to get more design experience anyway...and learned about paneling! Will build this up tomorrow. Make sure I know exactly what direction everything needs to be. 
+		Notes:
+			Solder on the omnetics connectors first. 
+			Use 0 Ohm resistors to short the reference/ground pins on both sides!
+
+__________
+2019-06-18
+
+	Directions: PCB splitter design
+	
+	Feel pretty good about the current design. Turns out the smart way to repeat parts is using panelization! See the splitter design for how this works. Also bookmarked a good resource that explains how to do this. Just a little bit concerned about how this will affect the process of preparing the PCB to be sent for printing. 
+		The REPEAT() function combined with rooms really is more for multichannel design. This I think is a simpler use case that has a built in solution. 
+	
+	pcbway.com is the company we'll be using. 
+	
+__________
+2019-06-17
+
+	Directions: 
+		_Try to decide on a design for the splitter. Start making it in altium.
+		
+	Got design figured out. Created new component for through hole omnetics. Started wiring everything in the schematic. Tomorrow, mostly finish actual design.
 
 __________
 2019-06-14
