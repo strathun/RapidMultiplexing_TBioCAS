@@ -1,3 +1,65 @@
+
+__________
+2019-07-22
+
+	Ketamine measurements Day 03
+		Mux factor of 4 looks to be giving good agreement with Ripple AP waveforms. Higher than this though and we see the high amplitude, narrow waveforms we saw before the shielding modifcations Mohit has made recently. It's possible this is an artefact that was present at all factors before and now is only seen at higher mux factors. I will try and see if threshold crossing events that look like the Ripple are still there, but are just being ignored because how my code is accepting these events. Also, will have to play with threshold since these recordings have a much worse SNR. 
+__________
+2019-07-17
+
+	Mohit: 
+		Looks like one of the [bits; LSB?] that sets the offset causes a pretty significant amount of noise to the next electrode in the mux sequence if the previous electrode crosses the 500 codes mark. Mohit can explain this better, just wanted some record for memory.
+	
+__________
+2019-07-16
+
+	Took Ripple noise measurements with TDT19. 
+		Matched well with impedance measurements from last Friday.
+	
+	Mohit: 
+		Having more luck with higher mux factor (even 16!). Turns out some trouble recently was being caused from the ref/gnd jumper coming off.
+__________
+2019-07-15
+
+	Took impedance measurements on TDT18 so Mohit could start doing more rigorous in vitro measurements.
+	
+	Mohit:
+		2x multiplexing is looking good very consistently (5/6 measurements). Unfortunately increasing the multiplexing factor is causing excessively noisey measurements again. 
+		
+__________
+2019-07-11
+
+	Mohit:
+		Says continued shielding (metal plates) is improving signal quality. This seems to be the only thing that's improved it. The current theory is that the digital components are creating wideband noise that is then picked up by the rest of the circuit. Therefor, shielding these components should (and appears to) reduce wideband noise. 
+		
+__________
+2019-07-10
+
+	Mohit:
+		Says started in vitro measurements. 1x multiplexing looks good, but 2x noise is too high. Still thinks it has something to do with EMI...
+__________
+2019-07-08
+
+	Mohit:
+		Says that separate metal shielding on the bottom of the board has really improved noise (4 out of 6 measurements agree with impedance predicted noise for resistor measurements). Will do in vitro measurements tomorrow. Planning for surgery next week.
+__________
+2019-06-27
+	
+	Ross Meeting: 
+		Thinks problems could possibly be either EMI or ground loop issues	
+			Mohit is going to start experiment with the ground loops. 
+			Also can take sort of EMI measurements with Tye's board by using it like an antenna. Don't connect ANYTHING to inputs and make recordings. Might eventually have to attach some sort of LARGE electrodes. 
+
+__________
+2019-06-26
+
+	Reading day
+	
+__________
+2019-06-25
+
+	Reading day
+	
 __________
 2019-06-24
 
@@ -9,16 +71,19 @@ __________
 	Connecting the output of the PXIe to earth ground looks to have removed some interesting high frequency noise components we detected while running Tye's board at higher frequencies (to 600e3). Unfortunately, this didn't seem to do much at first pass for the noise in Mohit's measurements.
 	
 	Finished splitter board. 
+	
 __________
 2019-06-21
 
 	Directions: Finish building up splitter board.
 	
 	Didn't quite get it done. Had some trouble connecting all 3 boards. Might have to get creative.
+	
 __________
 2019-06-20
 
 	Directions: Had a brief meeting with Ross yesterday before leaving. Recommended a paper that may help me understand differences beteween LFP and action potential amplitudes with the Mux. Try looking into this some today. Also, try to get started on building up the board.
+	
 __________
 2019-06-19
 
@@ -80,7 +145,7 @@ __________
 	Met with Ross (see today's date in notebook for notes). 
 	
 	Will focus on making a splitter in this interim time. 
-	Also, do different filters of LFP bands and look at time domain data. See notebooks for other notes as well. 
+	Also, do different filters of LFP bands and look at time domain data. See notebook for other notes as well. 
 	
 __________
 2019-06-12

@@ -27,11 +27,14 @@ highSpanNoGnd = y(3,:);
 freqSpan = x(3,:);
 load('2019-06-24_15hr_37min_07sec_elec_1110_HSonly_Av767_HS.mat')
 highSpanGnd = y(3,:);
+load('2019-06-24_17hr_52min_45sec_elec_1110_HSonly_Av767_HS.mat')
+muxON = y(3,:);
 
 figure
 plot( freqSpan, highSpanNoGnd )
 hold on
 plot( freqSpan, highSpanGnd )
+plot( freqSpan, muxON )
 ylabel('V/rt(Hz)')
 xlabel('Frequency (Hz)')
 legend('NoGnd', 'Gnded')
