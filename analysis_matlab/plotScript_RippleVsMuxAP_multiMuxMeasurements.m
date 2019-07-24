@@ -1,5 +1,8 @@
 %% Experiment: RippleVsMuxAp
-% Updated script for comparing action potentials between instruments
+% Combines detected waveforms from multiple multiplexing runs to approach
+% 30s of mux data. Raw and spike filtered data are plotted from each run as
+% a gut check to the user to make sure none of the channels look
+% particularly bad.
 
 close all 
 clearvars 
@@ -23,7 +26,8 @@ outputDir = ['../output/' parts{end}];
 % 
 %%%
 
-muxFileName    = '2019_7_22_13_49_31_4_2097152_5_2_1_6_smpls_raw.mat';
+muxFileNames    = {'2019_7_22_13_49_31_4_2097152_5_2_1_6_smpls_raw.mat'; 
+                 '2019_7_22_13_49_6_4_2097152_5_2_1_6_smpls_raw.mat'}; % Change to list
 rippleFileName = 'SD190719A_Ketamine_Day03_20190722_1251.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
@@ -36,17 +40,6 @@ rawdata = NSxFileArray.Data.NSxData;
 V = double( rawdata );
 timeRipple = double( NSxTimeStamps ) / 30000;
 VRipple = ( V  )/4;
-
-% Mux Data
-[muxChannelOrder] = muxChannelGrabber(muxFileName); % Gets channels from filename
-[muxChannelOrder] = channelMatcher( muxChannelOrder, 'Mux', 'Ripple'); % Converts to Ripple index
-numChannelsMux = length(muxChannelOrder);
-[ Vordered, timeMux, FsMux ] = ...
-    muxGetRaw( muxFileName, 600e3, numChannelsMux, 'downSampleOffset',0, ...
-               'downSampleTrigger', 0, 'averageSampleTrigger', 1);
-VMux = meanSubtraction(Vordered);   % Remove DC offsets
-% VMux = comAvgRef(Vordered);
-% VMux = Vordered;
 
 %% Filter Data
 % Data from both instruments is stored in a single data structure to allow
@@ -67,25 +60,8 @@ for ii = 1:numChannelsRip
     dataStructure(ii).figIndex = 1;
 end
 
-% Mux
-% First we run a first order low pass filter at 5 kHz to approximate the
-% bandwidth of the Ripple. Then apply spike filter as above.
-[ VMux ] = singlePoleAnalogFilt(VMux, FsMux, 4.9e3);
-[ dataFiltMux ] = filterFunc(VMux, FsMux, 3, ...
-               'highPassCorner', hpCornerFreq, ...
-               'lowPassCorner', lpCornerFreq);
-for ii = ( numChannelsRip + 1 ):( numChannelsRip + numChannelsMux )
-    muxIndex = (ii - ( numChannelsRip ) );
-    dataStructure(ii).rawData = VMux( muxIndex, : );
-    dataStructure(ii).filteredData = dataFiltMux( muxIndex, : );
-    dataStructure(ii).Fs = FsMux;
-    dataStructure(ii).instrument = 'Mux';
-    dataStructure(ii).electrode = muxChannelOrder( muxIndex );
-    dataStructure(ii).time = timeMux;
-    dataStructure(ii).threshColor = [.5 .5 .5];
-    dataStructure(ii).figIndex = 2;
-end
-
+% Prepare Mux Data
+[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
@@ -125,15 +101,37 @@ for ii = 1:totalChannels
         'Color', dataStructure(ii).threshColor, ...
         'LineWidth', 1.2)
     hold on
-    plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
-    ylim([ -40 40])
-    title(dataStructure(ii).instrument)
-    ylabel('Amplitude (uV)')
-    xlabel('Time (ms)')
     if strcmp(dataStructure(ii).instrument, 'Mux')
         % Remove from list of figures to close if Mux data is present
         figsToClose = figsToClose(find(figsToClose~=figNum));
     end
+    if strcmp(dataStructure(ii).instrument, 'Ripple')
+        plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
+    end
+    ylim([ -40 40])
+    title(dataStructure(ii).instrument)
+    ylabel('Amplitude (uV)')
+    xlabel('Time (ms)')
+
+end
+
+% Gross mess to combine all of the waveforms for matching mux channels from
+% different runs so that we can take the mean
+muxAPCellArray = cell(1, 16);
+for ii = 1:totalChannels
+    if strcmp(dataStructure(ii).instrument, 'Mux')
+        muxAPCellArray{dataStructure(ii).electrode} = ...
+            [muxAPCellArray{dataStructure(ii).electrode}; dataStructure(ii).waveformSorted];
+    end
+end
+% Delete empty cells
+muxAPCellArray = muxAPCellArray(~cellfun(@isempty, muxAPCellArray));
+for ii = 1:length(muxAPCellArray)
+    figNum = muxChannelOrder(ii);
+    figure(figNum)
+    subplot(1,2,2)
+    plot(dataStructure(totalChannels).timeWave*1e3, ...
+         mean(muxAPCellArray{ii}), 'LineWidth', 3.5)
 end
 
 % Plot Raw
@@ -142,6 +140,7 @@ for ii = 1:totalChannels
     figure(figNum)
     subplot(2,1,dataStructure(ii).figIndex)
     plot(dataStructure(ii).time, dataStructure(ii).rawData)
+    hold on
     title(dataStructure(ii).instrument)
     xlim([0 3.5])
     ylim([-1e3 1e3])
@@ -159,6 +158,7 @@ for ii = 1:totalChannels
     figure(figNum)
     subplot(2,1,dataStructure(ii).figIndex)
     plot(dataStructure(ii).time, dataStructure(ii).filteredData)
+    hold on
     title(dataStructure(ii).instrument)
     xlim([0 3.5])
     ylim([-40 40])

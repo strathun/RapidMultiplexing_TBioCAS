@@ -1,9 +1,27 @@
 
 __________
+2019-07-23
+
+	Impedance measurements with Gamry headstage at different resistor values. Looks like there is a corner at higher resistances (>70kOhm or so), but corner is higher (~500kHz) than what we saw in vivo. 
+	
+	Ross Meetig:
+		See notebook
+		Planned out experiment for tomorrow (See experimentOutline_20190724)
+		Analysis moving forward:
+			_Quantitative analysis of noise
+				SD during bursts and outside of bursts. <- look at CNT paper for ideas
+			_Use lower Mux factor to generate good shape for AP waveform. Then use matched filter to look for action 	potentials in higher mux factor. 
+			_Account for all of our noise <- Mohit should probably take point on this, but still discuss with him.
+			_Compare action potential shape at different mux factors (Might only get 1-8 for this)
+			_Start combining multiple 3.5s runs to get more threshold crossings for comparing to Ripple 30s. Try to get close to 30s
+__________
 2019-07-22
 
 	Ketamine measurements Day 03
 		Mux factor of 4 looks to be giving good agreement with Ripple AP waveforms. Higher than this though and we see the high amplitude, narrow waveforms we saw before the shielding modifcations Mohit has made recently. It's possible this is an artefact that was present at all factors before and now is only seen at higher mux factors. I will try and see if threshold crossing events that look like the Ripple are still there, but are just being ignored because how my code is accepting these events. Also, will have to play with threshold since these recordings have a much worse SNR. 
+		
+	Tomorrow: 
+		Impedance measurements with Gamry and impedance headstage/resistors to investigate what looks like a corner in the in vivo impedance measurements from today.
 __________
 2019-07-17
 
