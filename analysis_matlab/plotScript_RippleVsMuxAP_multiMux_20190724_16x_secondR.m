@@ -3,6 +3,7 @@
 % 30s of mux data. Raw and spike filtered data are plotted from each run as
 % a gut check to the user to make sure none of the channels look
 % particularly bad.
+% This is for the second round of mux/Ripple measurements at 8x
 
 close all 
 clearvars 
@@ -23,19 +24,17 @@ outputDir = ['../output/' parts{end}];
 % 2019_7_22_13_41_33_8_2097152_3_4_5_2_1_6_0_7_smpls_raw
 % 2019_7_22_13_33_39_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw
 % 2019_7_22_13_29_25_16_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_smpls_raw
-%
+% 
 % Good looking mux channels_7/24
 % 
-%
+% 
 % Ripple
 % SD190719A_Ketamine_Day03_20190722_1251
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
 
-muxFileNames    = {'2019_7_24_12_37_34_8_2097152_3_4_5_2_1_6_0_7_smpls_raw.mat'; 
-                   '2019_7_24_12_37_39_8_2097152_3_4_5_2_1_6_0_7_smpls_raw.mat';
-                   '2019_7_24_12_37_44_8_2097152_3_4_5_2_1_6_0_7_smpls_raw.mat'}; 
-rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1217.ns5';
+muxFileNames    = {'2019_7_24_13_31_2_16_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_smpls_raw.mat'};
+rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
 
@@ -137,7 +136,7 @@ end
 % muxAPCellArray = muxAPCellArray(~cellfun(@isempty, muxAPCellArray));
 
 % Plot cumulative meanwaves
-for ii = 1:length(muxAPCellArray)
+for ii = 1:length(muxChannelOrder)
     figNum = muxChannelOrder(ii);
     figure(figNum)
     subplot(1,2,2)
@@ -164,15 +163,26 @@ for ii = 1:totalChannels
 end
 
 % Plot Spike Filtered
+figNumArray = zeros(1,16);
 for ii = 1:totalChannels
     figNum = dataStructure(ii).electrode + 200;
     figure(figNum)
     subplot(2,1,dataStructure(ii).figIndex)
-    plot(dataStructure(ii).time, dataStructure(ii).filteredData)
+    figNumArray(figNum - 200) = figNumArray(figNum - 200) + 1; % Counter for spacing plots;
+    if dataStructure(ii).figIndex == 2
+        % Use this to find the best spike filtered data recording, then use
+        % single recording version of this script to get good comparison
+        plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
+             40*(figNumArray(figNum - 200) - 2))
+        ylim([-40 40])
+    elseif dataStructure(ii).figIndex == 1
+        plot(dataStructure(ii).time, dataStructure(ii).filteredData)
+        ylim([-40 40])
+    end
     hold on
     title(dataStructure(ii).instrument)
     xlim([0 3.5])
-    ylim([-40 40])
+    
     ylabel('Amplitude (uV)')
     xlabel('Time (s)')
     if strcmp(dataStructure(ii).instrument, 'Mux')

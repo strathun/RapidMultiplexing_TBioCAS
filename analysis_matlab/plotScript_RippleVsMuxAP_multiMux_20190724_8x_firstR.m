@@ -3,6 +3,7 @@
 % 30s of mux data. Raw and spike filtered data are plotted from each run as
 % a gut check to the user to make sure none of the channels look
 % particularly bad.
+% This is for the first round of mux/Ripple measurements at 8x
 
 close all 
 clearvars 
