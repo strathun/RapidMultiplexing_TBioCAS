@@ -26,17 +26,15 @@ outputDir = ['../output/' parts{end}];
 % 2019_7_22_13_29_25_16_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_smpls_raw
 % 
 % Good looking mux channels_7/24
-% Iso: 
-% 2019_7_24_11_13_33_8_2097152_3_4_5_2_1_6_0_7_smpls_raw
-% Ket:
-% 2019_7_24_13_23_52_8_2097152_3_4_5_2_1_6_0_7_smpls_raw
-% 
+% 2019_7_24_12_35_0_20_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_3_4_5_2_smpls_raw
+% 2019_7_24_12_52_42_20_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_3_4_5_2_smpls_raw
+%
 % Ripple
 % SD190719A_Ketamine_Day03_20190722_1251
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
 
-muxFileNames    = {'2019_7_24_11_13_33_8_2097152_3_4_5_2_1_6_0_7_smpls_raw.mat'};
+muxFileNames    = {'2019_7_24_12_35_0_20_2097152_3_4_5_2_1_6_0_7_15_8_9_14_13_10_11_12_3_4_5_2_smpls_raw.mat'};
 rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
@@ -101,51 +99,51 @@ figsToClose = 1:1:16;
 figsToClose = [figsToClose 101:1:116];
 figsToClose = [figsToClose 201:1:216];
 
-% Plot APs
-for ii = 1:totalChannels
-    figNum = dataStructure(ii).electrode;
-    figure(figNum)
-    subplot(1,2,dataStructure(ii).figIndex)
-    plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
-        'Color', dataStructure(ii).threshColor, ...
-        'LineWidth', 1.2)
-    hold on
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        % Remove from list of figures to close if Mux data is present
-        figsToClose = figsToClose(find(figsToClose~=figNum));
-    end
-    if strcmp(dataStructure(ii).instrument, 'Ripple')
-        plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
-    end
-    ylim([ -40 40])
-    title(dataStructure(ii).instrument)
-    ylabel('Amplitude (uV)')
-    xlabel('Time (ms)')
+% % Plot APs
+% for ii = 1:totalChannels
+%     figNum = dataStructure(ii).electrode;
+%     figure(figNum)
+%     subplot(1,2,dataStructure(ii).figIndex)
+%     plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
+%         'Color', dataStructure(ii).threshColor, ...
+%         'LineWidth', 1.2)
+%     hold on
+%     if strcmp(dataStructure(ii).instrument, 'Mux')
+%         % Remove from list of figures to close if Mux data is present
+%         figsToClose = figsToClose(find(figsToClose~=figNum));
+%     end
+%     if strcmp(dataStructure(ii).instrument, 'Ripple')
+%         plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
+%     end
+%     ylim([ -40 40])
+%     title(dataStructure(ii).instrument)
+%     ylabel('Amplitude (uV)')
+%     xlabel('Time (ms)')
+% 
+% end
 
-end
-
-% Gross mess to combine all of the waveforms for matching mux channels from
-% different runs so that we can take the mean
-muxAPCellArray = cell(1, 16);
-for ii = 1:totalChannels
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        muxAPCellArray{dataStructure(ii).electrode} = ...
-            [muxAPCellArray{dataStructure(ii).electrode}; dataStructure(ii).waveformSorted];
-    end
-end
+% % Gross mess to combine all of the waveforms for matching mux channels from
+% % different runs so that we can take the mean
+% muxAPCellArray = cell(1, 16);
+% for ii = 1:totalChannels
+%     if strcmp(dataStructure(ii).instrument, 'Mux')
+%         muxAPCellArray{dataStructure(ii).electrode} = ...
+%             [muxAPCellArray{dataStructure(ii).electrode}; dataStructure(ii).waveformSorted];
+%     end
+% end
 
 % Delete empty cells [Should be safe to delete, removing this line makes
 % this script work with channel orders that are more diverse
 % muxAPCellArray = muxAPCellArray(~cellfun(@isempty, muxAPCellArray));
 
-% Plot cumulative meanwaves
-for ii = 1:length(muxChannelOrder)
-    figNum = muxChannelOrder(ii);
-    figure(figNum)
-    subplot(1,2,2)
-    plot(dataStructure(totalChannels).timeWave*1e3, ...
-         mean(muxAPCellArray{figNum}), 'LineWidth', 3.5)
-end
+% % Plot cumulative meanwaves
+% for ii = 1:length(muxChannelOrder)
+%     figNum = muxChannelOrder(ii);
+%     figure(figNum)
+%     subplot(1,2,2)
+%     plot(dataStructure(totalChannels).timeWave*1e3, ...
+%          mean(muxAPCellArray{figNum}), 'LineWidth', 3.5)
+% end
 
 % Plot Raw
 for ii = 1:totalChannels
@@ -175,8 +173,8 @@ for ii = 1:totalChannels
     if dataStructure(ii).figIndex == 2
         % Use this to find the best spike filtered data recording, then use
         % single recording version of this script to get good comparison
-        plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
-             40*(figNumArray(figNum - 200) - 2))
+        plot(dataStructure(ii).time, dataStructure(ii).filteredData) %+ ...
+%              40*(figNumArray(figNum - 200) - 2))
         ylim([-40 40])
     elseif dataStructure(ii).figIndex == 1
         plot(dataStructure(ii).time, dataStructure(ii).filteredData)

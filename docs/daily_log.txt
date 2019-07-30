@@ -1,5 +1,17 @@
 
 __________
+2019-07-29
+	
+	Ross Meeting:
+		See notebook
+	
+	Switching focus to 30ks/s -> 1, 2, 4, 10, 20
+	Tomorrow:
+		Try to repeat same basic structure of experiments from 7/24, but focused around this 30ks organization. Also, take scrambled order measurements. 
+	
+	Start thinking about physiological explanations/discussion 
+
+__________
 2019-07-23
 
 	Impedance measurements with Gamry headstage at different resistor values. Looks like there is a corner at higher resistances (>70kOhm or so), but corner is higher (~500kHz) than what we saw in vivo. 
