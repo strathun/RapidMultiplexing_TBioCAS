@@ -19,7 +19,7 @@ outputDir = ['../output/' parts{end}];
 % 2019_7_22_13_49_31_4_2097152_5_2_1_6_smpls_raw
 %%%
 
-muxFileName    = '2019_7_22_13_41_33_8_2097152_3_4_5_2_1_6_0_7_smpls_raw.mat';
+muxFileName    = '2019_7_30_11_27_32_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
 rippleFileName = 'SD190719A_Ketamine_Day03_20190722_1251.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;

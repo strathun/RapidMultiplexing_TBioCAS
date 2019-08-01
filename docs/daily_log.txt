@@ -1,5 +1,18 @@
 
 __________
+2019-07-31
+
+	Brainstorming figure ideas. Trying to get clear path to paper.
+		Finished up some code architecture to make this easier to implement
+__________
+2019-07-30
+
+	More experiments:
+		Had worse issues with EMI.
+		Also, looks like we're having really bad drift. This seemed to be worse in the isoflurane recordings which were taken after the ketamine. This is interesting, because almost no changes were made between these sessions. As the rat was coming out of ketamine, I just moved his nose into the cone (which he had removed as he was coming out of ketamine) and turned on the iso. 
+		
+
+__________
 2019-07-29
 	
 	Ross Meeting:

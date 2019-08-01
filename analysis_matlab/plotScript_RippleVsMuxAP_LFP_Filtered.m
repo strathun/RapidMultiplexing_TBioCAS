@@ -23,7 +23,7 @@ outputDir = ['../output/' parts{end}];
 % 
 %%%
 
-muxFileName    = '2019_7_22_13_49_31_4_2097152_5_2_1_6_smpls_raw.mat';
+muxFileName    = '2019_7_30_10_50_46_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
 rippleFileName = 'SD190719A_Ketamine_Day03_20190722_1251.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
@@ -70,7 +70,7 @@ end
 % Mux
 % First we run a first order low pass filter at 5 kHz to approximate the
 % bandwidth of the Ripple. Then apply spike filter as above.
-[ VMux ] = singlePoleAnalogFilt(VMux, FsMux, 4.9e3);
+% [ VMux ] = singlePoleAnalogFilt(VMux, FsMux, 4.9e3);
 [ dataFiltMux ] = filterFunc(VMux, FsMux, 3, ...
                'highPassCorner', hpCornerFreq, ...
                'lowPassCorner', lpCornerFreq);
@@ -94,7 +94,7 @@ ARP       = .001;
 threshold = -3.5;
 [~, totalChannels] = size(dataStructure);
 for ii = 1:totalChannels
-    [spikesIndex, ~] = ...
+    [spikesIndex, ~, dataStructure(ii).Vrms] = ...
         spike_detection(dataStructure(ii).filteredData,threshold,1,0);
     [dataStructure(ii).waveforms, dataStructure(ii).timeWave, spikesIndex] = ...
         waveformGrabber(dataStructure(ii).filteredData, ...
@@ -115,17 +115,22 @@ end
 figsToClose = 1:1:16;
 figsToClose = [figsToClose 101:1:116];
 figsToClose = [figsToClose 201:1:216];
+figsToClose = [figsToClose 301:1:316];
 
 % Plot APs
 for ii = 1:totalChannels
     figNum = dataStructure(ii).electrode;
     figure(figNum)
     subplot(1,2,dataStructure(ii).figIndex)
-    plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
-        'Color', dataStructure(ii).threshColor, ...
-        'LineWidth', 1.2)
-    hold on
-    plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
+    try
+        plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
+            'Color', dataStructure(ii).threshColor, ...
+            'LineWidth', 1.2)
+        hold on
+        plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
+    catch
+        warning('No action potentials detected for E%d', dataStructure(ii).electrode)
+    end
     ylim([ -40 40])
     title(dataStructure(ii).instrument)
     ylabel('Amplitude (uV)')
@@ -159,11 +164,37 @@ for ii = 1:totalChannels
     figure(figNum)
     subplot(2,1,dataStructure(ii).figIndex)
     plot(dataStructure(ii).time, dataStructure(ii).filteredData)
-    title(dataStructure(ii).instrument)
+    hold on
+    plotRaster( gcf, dataStructure(ii).spikeTimes, ...
+                'lineCenter', -50, 'lineHeight', 10)
+    str = sprintf('%s; Vrms: %d uV', dataStructure(ii).instrument, ...
+        dataStructure(ii).Vrms);
+    title(str)
     xlim([0 3.5])
-    ylim([-40 40])
+    ylim([-60 40])
     ylabel('Amplitude (uV)')
     xlabel('Time (s)')
+    if strcmp(dataStructure(ii).instrument, 'Mux')
+        % Remove from list of figures to close if Mux data is present
+        figsToClose = figsToClose(find(figsToClose~=figNum));
+    end
+end
+
+% Plot ISI data
+for ii = 1:totalChannels
+    figNum = dataStructure(ii).electrode + 300;
+    figure(figNum)
+    subplot(2,1,dataStructure(ii).figIndex)
+    try
+        spikeEventsDif = diff(dataStructure(ii).spikeTimes*(1e3));
+        edges = 0:1:200;
+        histogram(spikeEventsDif,edges)
+        xlim([0 100])
+        xlabel('Inter-Spike Interval (ms)')
+        ylabel('Number of Counts')
+    catch
+        warning('No action potentials detected for E%d', dataStructure(ii).electrode)
+    end
     if strcmp(dataStructure(ii).instrument, 'Mux')
         % Remove from list of figures to close if Mux data is present
         figsToClose = figsToClose(find(figsToClose~=figNum));
