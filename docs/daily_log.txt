@@ -1,5 +1,10 @@
 
 __________
+2019-08-01
+
+	Started generating preliminary figures.
+	
+__________
 2019-07-31
 
 	Brainstorming figure ideas. Trying to get clear path to paper.

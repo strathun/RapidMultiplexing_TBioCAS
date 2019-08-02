@@ -86,20 +86,6 @@ ARP       = .001;
 threshold = -3.5;
 [~, totalChannels] = size(dataStructure);
 for ii = 1:totalChannels
-%     [spikesIndex, ~] = ...
-%         spike_detection(dataStructure(ii).filteredData,threshold,1,0);
-%     
-%     [dataStructure(ii).waveforms, dataStructure(ii).timeWave, spikesIndex] = ...
-%         waveformGrabber(dataStructure(ii).filteredData, ...
-%         spikesIndex, 1.6, dataStructure(ii).Fs); % Must be more than two spike events
-%     
-% %removes "bad" spikes
-%     [dataStructure(ii).waveformSorted, spikeEventsNew] = ...
-%         templateMatcher(dataStructure(ii).waveforms, ...
-%                         rejectMod,...
-%                         spikesIndex, ...
-%                         ARP, ...
-%                         dataStructure(ii).Fs); 
 
  [dataStructure(ii).waveforms, dataStructure(ii).timeWave, ...
   dataStructure(ii).waveformSorted, spikeEventsNew] = ...
@@ -118,27 +104,22 @@ figsToClose = 1:1:16;
 figsToClose = [figsToClose 101:1:116];
 figsToClose = [figsToClose 201:1:216];
 
-% Plot APs
-for ii = 1:totalChannels
+% Plot APs (Ripple)
+numSTDs = 1;
+for ii = 1:numChannelsMux
     figNum = dataStructure(ii).electrode;
     figure(figNum)
-    subplot(1,2,dataStructure(ii).figIndex)
-    plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
-        'Color', dataStructure(ii).threshColor, ...
-        'LineWidth', 1.2)
-    hold on
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        % Remove from list of figures to close if Mux data is present
-        figsToClose = figsToClose(find(figsToClose~=figNum));
-    end
-    if strcmp(dataStructure(ii).instrument, 'Ripple')
-        plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, 'LineWidth', 3.5)
-    end
-    ylim([ -40 40])
-    title(dataStructure(ii).instrument)
+    
+    [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
+            dataStructure(ii).waveformSorted, numSTDs);
+        plot(dataStructure(totalChannels).timeWave*1e3, ...
+             meanTrace, 'k', 'LineWidth', 3.5)
+        hold on
+        plot( dataStructure(totalChannels).timeWave*1e3, highTrace, 'k--', 'LineWidth', 2.5)
+        plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, 'k--', 'LineWidth', 2.5)
+    ylim([ -30 30])
     ylabel('Amplitude (uV)')
     xlabel('Time (ms)')
-
 end
 
 % Gross mess to combine all of the waveforms for matching mux channels from
@@ -151,67 +132,18 @@ for ii = 1:totalChannels
     end
 end
 
-% Delete empty cells [Should be safe to delete, removing this line makes
-% this script work with channel orders that are more diverse
-% muxAPCellArray = muxAPCellArray(~cellfun(@isempty, muxAPCellArray));
-
 % Plot cumulative meanwaves
 for ii = 1:length(muxChannelOrder)
+    traceColor = [0.5843 0.8157 0.9882]; % Nice light blue
     figNum = muxChannelOrder(ii);
     figure(figNum)
-    subplot(1,2,2)
+    [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
+        muxAPCellArray{figNum}, numSTDs);
     plot(dataStructure(totalChannels).timeWave*1e3, ...
-         mean(muxAPCellArray{figNum}), 'LineWidth', 3.5)
+         meanTrace, 'color', traceColor, 'LineWidth', 3.5)
+    plot( dataStructure(totalChannels).timeWave*1e3, highTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
+    plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
 end
 
-% Plot Raw
-for ii = 1:totalChannels
-    figNum = dataStructure(ii).electrode + 100;
-    figure(figNum)
-    subplot(2,1,dataStructure(ii).figIndex)
-    plot(dataStructure(ii).time, dataStructure(ii).rawData)
-    hold on
-    title(dataStructure(ii).instrument)
-    xlim([0 3.5])
-    ylim([-1e3 1e3])
-    ylabel('Amplitude (uV)')
-    xlabel('Time (s)')
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        % Remove from list of figures to close if Mux data is present
-        figsToClose = figsToClose(find(figsToClose~=figNum));
-    end
-end
-
-% Plot Spike Filtered
-figNumArray = zeros(1,16);
-for ii = 1:totalChannels
-    figNum = dataStructure(ii).electrode + 200;
-    figure(figNum)
-    subplot(2,1,dataStructure(ii).figIndex)
-    figNumArray(figNum - 200) = figNumArray(figNum - 200) + 1; % Counter for spacing plots;
-    if dataStructure(ii).figIndex == 2
-        % Use this to find the best spike filtered data recording, then use
-        % single recording version of this script to get good comparison
-        plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
-             40*(figNumArray(figNum - 200) - 2))
-    elseif dataStructure(ii).figIndex == 1
-        plot(dataStructure(ii).time, dataStructure(ii).filteredData)
-        ylim([-40 40])
-    end
-    hold on
-    title(dataStructure(ii).instrument)
-    xlim([0 3.5])
-    
-    ylabel('Amplitude (uV)')
-    xlabel('Time (s)')
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        % Remove from list of figures to close if Mux data is present
-        figsToClose = figsToClose(find(figsToClose~=figNum));
-    end
-end
-
-% Close excess figures
-for ii = 1:length(figsToClose)
-    figure(figsToClose(ii))
-    close
-end
+%%
+% Still not perfect. Maybe some sort of fill will look better?
