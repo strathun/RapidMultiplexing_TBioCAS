@@ -38,7 +38,7 @@ for ruNum = 1:totalRuns
         dataStructure(ii).instrument = 'Mux';
         dataStructure(ii).electrode = muxChannelOrder( muxIndex );
         dataStructure(ii).time = timeMux;
-        dataStructure(ii).threshColor = [.5 .5 .5];
+        dataStructure(ii).threshColor = [0.8867 0.1055 0.2578];% light blue [0 153 255]./256;%[0.5843 0.8157 0.9882];
         dataStructure(ii).figIndex = 2;
     end
 

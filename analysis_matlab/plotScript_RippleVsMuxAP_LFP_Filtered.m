@@ -119,6 +119,7 @@ for ii = 1:totalChannels
     figNum = dataStructure(ii).electrode;
     figure(figNum)
     subplot(1,2,dataStructure(ii).figIndex)
+    
     try
         plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted, ...
             'Color', dataStructure(ii).threshColor, ...
