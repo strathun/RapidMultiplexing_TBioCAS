@@ -1,4 +1,10 @@
 
+
+__________
+2019-08-05
+
+	Was looking at the scrambled AP comparisons. Came to conclusion that the offset of 5 we were using with the Mux recordings previously was incorrect. Offset should be 4. This also fixes a problem we saw with a 20x recording previously wich gives us even more confidence in this change. 
+	
 __________
 2019-08-01
 

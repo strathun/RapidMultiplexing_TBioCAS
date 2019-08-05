@@ -5,7 +5,7 @@ function [dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(data
 
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
-totalChannels  =   16; % Offset for data structure from Ripple data
+[~, totalChannels]  =   size(dataStructure); % Offset for data structure from Ripple data
 totalRuns = length(inputFileNames);
 
 for ruNum = 1:totalRuns
@@ -40,6 +40,7 @@ for ruNum = 1:totalRuns
         dataStructure(ii).time = timeMux;
         dataStructure(ii).threshColor = [0.8867 0.1055 0.2578];% light blue [0 153 255]./256;%[0.5843 0.8157 0.9882];
         dataStructure(ii).figIndex = 2;
+        dataStructure(ii).muxChannelOrder = muxChannelOrder;
     end
 
 totalChannels = totalChannels + numChannelsMux;

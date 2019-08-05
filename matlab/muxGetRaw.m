@@ -66,7 +66,7 @@ V = V.';
 %% Sort Channels
 % First have to make sure every channel has exactly the right number of
 % datapoints.
-V = V(6:end);   % Mux has a 5 data point offset from the listed channel number
+V = V(5:end); %offset of 4; %V(6:end);   % Mux has a 5 data point offset from the listed channel number
 timeStart = timeWindow(1);
 timeStop = timeWindow(2);
 if timeStop > 0
