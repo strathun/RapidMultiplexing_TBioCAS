@@ -1,4 +1,4 @@
-function [dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, inputFileNames)
+function [dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, inputFileNames, muxThreshColor)
 % Makes it easier to process mux data from multiple files. Essentially just
 % copied and pasted and made to work in a for loop from previous scripts in
 % analysis_matlab.
@@ -38,7 +38,7 @@ for ruNum = 1:totalRuns
         dataStructure(ii).instrument = 'Mux';
         dataStructure(ii).electrode = muxChannelOrder( muxIndex );
         dataStructure(ii).time = timeMux;
-        dataStructure(ii).threshColor = [0.8867 0.1055 0.2578];% light blue [0 153 255]./256;%[0.5843 0.8157 0.9882];
+        dataStructure(ii).threshColor = muxThreshColor; %[0.8867 0.1055 0.2578]; % light red %[ 0.9805 0.7891 0.2070 ]; % light gold; %; % light blue [0 153 255]./256;%[0.5843 0.8157 0.9882];
         dataStructure(ii).figIndex = 2;
         dataStructure(ii).muxChannelOrder = muxChannelOrder;
     end

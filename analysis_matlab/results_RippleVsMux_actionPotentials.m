@@ -18,6 +18,14 @@ parts = strsplit(currentFile, {'\', '\'});
 outputDir = ['../output/' parts{end}];
 [~, ~] = mkdir(outputDir);
 
+%% Color Pallette
+rippleMeanColor = 'k';
+rippleThreshColor = [.5 .5 .5];
+muxMeanColor = [83 43 231]./256;% tropical rain forest%[0 127 232]./256; % azure % [4 138 129]./256;
+muxThreshColor = [140 155 255]./256; %[72 169 163]./256;
+
+
+
 %% 
 % Good looking mux channels_7/22
 % 2019_7_22_13_49_31_4_2097152_5_2_1_6_smpls_raw
@@ -33,9 +41,7 @@ outputDir = ['../output/' parts{end}];
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
 
-muxFileNames    = {'2019_7_24_13_24_41_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_25_1_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
+muxFileNames    = {'2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
                    '2019_7_24_13_27_14_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
                    '2019_7_24_13_27_29_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
                    '2019_7_24_13_27_34_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
@@ -43,7 +49,15 @@ muxFileNames    = {'2019_7_24_13_24_41_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw
                    '2019_7_24_13_29_5_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
                    '2019_7_24_13_29_0_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
                    '2019_7_24_13_28_25_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_28_35_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';}; 
+                   '2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';}; 
+% Started with 11 recordings;
+% Removed:
+% '2019_7_24_13_25_1_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
+% '2019_7_24_13_24_41_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
+% '2019_7_24_13_28_35_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat;
+% Added :
+% 2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat
+               
 rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
@@ -72,13 +86,13 @@ for ii = 1:numChannelsRip
     dataStructure(ii).instrument = 'Ripple';
     dataStructure(ii).electrode = ii;
     dataStructure(ii).time = timeRipple;
-    dataStructure(ii).threshColor = [.5 .5 .5]; %[0.8867 0.1055 0.2578];
-    dataStructure(ii).meanColor = 'k'; %[0.6350 0.0780 0.1840];
+    dataStructure(ii).threshColor = rippleThreshColor; %[0.8867 0.1055 0.2578];
+    dataStructure(ii).meanColor = rippleMeanColor; %[0.6350 0.0780 0.1840];
     dataStructure(ii).figIndex = 1;
 end
 
 % Prepare Mux Data
-[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames);
+[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames, muxThreshColor);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
@@ -112,9 +126,9 @@ for ii = 1:totalChannels
         [numTraces, ~] = size(dataStructure(ii).waveformSorted);
         for jj = 1:numTraces    % Have to do it this gross way to do transparency
             plot1 = plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted(jj,:), ...
-                'Color', dataStructure(ii).threshColor, ...
-                'LineWidth', 1.2);
-            plot1.Color(4) = 0.1;   % Sets transparency
+                '--', 'Color', dataStructure(ii).threshColor, ...
+                'LineWidth', 0.5 );
+            plot1.Color(4) = 1.0;   % Sets transparency
             hold on
         end
     catch
@@ -147,7 +161,7 @@ for ii = 1:numChannelsMux
     [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
             dataStructure(ii).waveformSorted, numSTDs);
         plot(dataStructure(totalChannels).timeWave*1e3, ...
-             meanTrace, 'color', 'k', 'LineWidth', 3.5)
+             meanTrace, 'color', rippleMeanColor, 'LineWidth', 3.5)
         hold on
 %         plot( dataStructure(totalChannels).timeWave*1e3, highTrace, 'k--', 'LineWidth', 2.5)
 %         plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, 'k--', 'LineWidth', 2.5)
@@ -168,17 +182,17 @@ end
 
 % Plot cumulative meanwaves
 for ii = 1:length(muxChannelOrder)
-    traceColor = [1 0 0]; %[0.6350 0.0780 0.1840]; %[0 0.4470 0.7410]; % Better blue than 'blue'
+%     traceColor = [1 0 0]; % Pure Red; [0.9290, 0.6940, 0.1250]; % Matlab gold %[0.6350 0.0780 0.1840]; %[0 0.4470 0.7410]; % Better blue than 'blue'
     figNum = muxChannelOrder(ii);
     figure(figNum)
     [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
         muxAPCellArray{figNum}, numSTDs);
     plot(dataStructure(totalChannels).timeWave*1e3, ...
-         meanTrace, 'color', traceColor, 'LineWidth', 3.5)
+         meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
     figure(100 + figNum)
     % Second plot for array cartoon
     plot(dataStructure(totalChannels).timeWave*1e3, ...
-         meanTrace, 'color', traceColor, 'LineWidth', 3.5)
+         meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
      hold on
      ylim([ -30 30])
      set(gcf, 'Position',  [50, 100, 200, 300])

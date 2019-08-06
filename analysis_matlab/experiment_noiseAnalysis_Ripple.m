@@ -21,7 +21,7 @@ outputDir = ['../output/' parts{end}];
 %% 
 rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1217.ns5';
 gamryFileName  = '..\rawData\Gamry\2019-07-24_TDT19_Day05';
-fLim           = [1 15e3];  % Range for TIN calculation
+fLim           = [1 7.5e3];  % Range for TIN calculation
 
 %% Loading/Preparing Data
 % First, we need to calculate all of the expected total integrated noise 
@@ -38,8 +38,6 @@ kT=300*1.38e-23;
 Z = sqrt(Zreal.^2);
 
 % Recorded Signal
-hpCornerFreq   =  750;
-lpCornerFreq   = 4000;
 % Ripple Data. Ripple uses .25 uV per bit. Data comes in as bits. Here
 % we're leaving units as uV [mini function candidate]
 [ NSxFileArray, NSxbasicHeader, NSxchannelHeader, NSxTimeStamps ] = ...
@@ -56,21 +54,21 @@ for ii = 1:16
     chTye = channelMatcher( ii, 'Ripple', 'Tye'); % Instruments indexed differently
 
     % Measured TIN
-    [pxx1,f] = psdWalker(VRipple(chRipple,:)./1e6,64,30e3);   % output: nV/rtHz 
+    [measP, measf] = psdWalker(VRipple(chRipple,:)./1e6,64,30e3);   % output: nV/rtHz 
 
     % Impedance predicted noise (nV)
     noiseImpArray = sqrt(4*kT*Z(:,1,chTye))*1e9;
-    
+    fImp = fImp(:,1,1).';
     % TIN Calculations
     % UPDATE: make sure everything goes into this function correctly. Also
     % add a percent error calculation at each frequency to be plotted.
-    [cumMeasCircuit] = walkerTIN(freq, spectrum, fLim);
-    [cumMeasImp] = walkerTIN(freq, spectrum, fLim);
-    [cumMeasMeasured] = walkerTIN(freq, spectrum, fLim);
+    [cumMeasCircuit] = walkerTIN(measf.', (sqrt( groundPower( :, 1 ) )).', fLim);
+    [cumMeasImp] = walkerTIN(fliplr(fImp), fliplr((noiseImpArray./1e9).'), fLim);
+    [cumMeasMeasured] = walkerTIN(measf.', (measP./1e9).', fLim);
     
     % Plot
     figure(ii)
-    loglog(f,pxx1,'LineWidth',1.4)
+    loglog(measf, measP,'LineWidth',1.4)
     hold on
     loglog(fImp(:,1,chTye),noiseImpArray,'--','LineWidth',2)
     grid on
