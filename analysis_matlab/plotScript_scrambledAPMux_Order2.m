@@ -31,7 +31,8 @@ muxFileNames    = {'2019_7_30_10_27_7_4_2097152_5_6_1_2_smpls_raw.mat';
 %% Filter Data
 % Prepare Mux Data
 dataStructure = [];
-[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames);
+muxThreshColor = [1 1 1]; % because I'm lazy multiMuxCombine won't run without it now.
+[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames, muxThreshColor);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.

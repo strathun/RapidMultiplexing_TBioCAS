@@ -1,4 +1,12 @@
 
+__________
+2019-08-15-16
+
+	Submitted!
+__________
+2019-08-12
+
+	Starting work on description of spike sorting and SNR analysis. In the future, should probably move to something more standardized like mountainsort. For now, need to find way to calculate SNR that doesn't use the standard deviation of the mean spike waveform
 
 __________
 2019-08-05

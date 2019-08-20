@@ -80,30 +80,51 @@ for ii = 1:numChannelsRip
 end
 
 % Prepare Mux Data
-[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames);
+muxThreshColor = [1 1 1];
+[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames, muxThreshColor);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
-rejectMod =  1.7;
+rejectMod =  1.7; % 1.8;   % 1.7
 ARP       = .001;
-threshold = -3.5;
+threshold =  -3.0;%-3.0; %-7.5;%-2.8;   % -3.5
+voltORrms = 1; % select rms (1) for Ripple
 [~, totalChannels] = size(dataStructure);
+jjj = 1; % Counter for mux ISI Array
+dataStructureMuxISI(16).ISI = []; % Initialize structure for appending
 for ii = 1:totalChannels
-    [spikesIndex, ~] = ...
-        spike_detection(dataStructure(ii).filteredData,threshold,1,0);
-    [dataStructure(ii).waveforms, dataStructure(ii).timeWave, spikesIndex] = ...
-        waveformGrabber(dataStructure(ii).filteredData, ...
-        spikesIndex, 1.6, dataStructure(ii).Fs); % Must be more than two spike events
-    
-%removes "bad" spikes
-    [dataStructure(ii).waveformSorted, spikeEventsNew] = ...
-        templateMatcher(dataStructure(ii).waveforms, ...
-                        rejectMod,...
-                        spikesIndex, ...
-                        ARP, ...
-                        dataStructure(ii).Fs); 
+    % If mux, grab the threshold value of the same Ripple channel and set
+    % threshold to a voltage value. Eventually fix all of this to do input
+    % parsing
+    if strcmp(dataStructure(ii).instrument, 'Mux')
+        threshold = dataStructure( dataStructure(ii).electrode ).thresholdVal ;
+        voltORrms = 0;
+        templateWaveform = dataStructure( dataStructure(ii).electrode ).meanWave;
+    else
+        templateWaveform = [];
+    end
+ 
+ [dataStructure(ii).waveforms, dataStructure(ii).timeWave, ...
+  dataStructure(ii).waveformSorted, spikeEventsNew, ~, dataStructure(ii).thresholdVal] = ...
+     spikeSortBlock( ...
+                    dataStructure(ii).filteredData, ...
+                    dataStructure(ii).Fs, ...
+                    threshold, ...
+                    rejectMod, ...
+                    ARP, voltORrms, templateWaveform );                   
     dataStructure(ii).meanWave = mean(dataStructure(ii).waveformSorted);
     dataStructure(ii).spikeTimes = dataStructure(ii).time(spikeEventsNew);
+    dataStructure(ii).ISI = diff(dataStructure(ii).spikeTimes*(1e3));
+    % Perform SNR calcs for Ripple data. Mux calcs are below
+    if ii <= numChannelsRip
+        dataStructure(ii).SNRKelly = snrKelly(dataStructure(ii).waveformSorted);
+        dataStructure(ii).pkpkAmp = max( dataStructure(ii).meanWave ) - ...
+            min( dataStructure(ii).meanWave );
+    else
+        dataStructureMuxISI(dataStructure(ii).electrode).ISI = ...
+            [dataStructureMuxISI(dataStructure(ii).electrode).ISI ...
+            diff(dataStructure(ii).spikeTimes*(1e3))];
+    end
 end
 
 % Generate list used to close figures without Ripple and Mux data

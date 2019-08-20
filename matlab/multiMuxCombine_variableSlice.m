@@ -1,4 +1,4 @@
-function [dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, inputFileNames, muxThreshColor)
+function [dataStructure, numChannelsMux, muxChannelOrder, sliceAllocation] = multiMuxCombine(dataStructure, inputFileNames, muxThreshColor)
 % Makes it easier to process mux data from multiple files. Essentially just
 % copied and pasted and made to work in a for loop from previous scripts in
 % analysis_matlab.
@@ -14,11 +14,14 @@ for ruNum = 1:totalRuns
     [muxChannelOrder] = muxChannelGrabber(muxFileName); % Gets channels from filename
     [muxChannelOrder] = channelMatcher( muxChannelOrder, 'Mux', 'Ripple'); % Converts to Ripple index
     numChannelsMux = length(muxChannelOrder);
-    [ Vordered, timeMux, FsMux ] = ...
-        muxGetRaw( muxFileName, 600e3, numChannelsMux, 'downSampleOffset',0, ...
-                   'downSampleTrigger', 0, 'averageSampleTrigger', 1);
+    [ Vordered, timeMux, FsMux, muxChannelOrder, sliceAllocation ] = ...
+        muxGetRaw_variableSlice( muxFileName, 600e3, numChannelsMux, muxChannelOrder, ...
+                   'downSampleOffset', 0, ...
+                   'downSampleTrigger', 0, ...
+                   'averageSampleTrigger', 1);
     VMux = meanSubtraction(Vordered);   % Remove DC offsets
-%     VMux = comAvgRef(Vordered);
+    [numChannelsMux, ~] = size(VMux);
+    % VMux = comAvgRef(Vordered);
     % VMux = Vordered;
 
     %% Apply Filter
@@ -37,6 +40,7 @@ for ruNum = 1:totalRuns
         dataStructure(ii).Fs = FsMux;
         dataStructure(ii).instrument = 'Mux';
         dataStructure(ii).electrode = muxChannelOrder( muxIndex );
+        dataStructure(ii).sliceAllocation = sliceAllocation( muxIndex );
         dataStructure(ii).time = timeMux;
         dataStructure(ii).threshColor = muxThreshColor; %[0.8867 0.1055 0.2578]; % light red %[ 0.9805 0.7891 0.2070 ]; % light gold; %; % light blue [0 153 255]./256;%[0.5843 0.8157 0.9882];
         dataStructure(ii).figIndex = 2;

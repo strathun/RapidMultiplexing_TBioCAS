@@ -32,22 +32,9 @@ outputDir = ['../output/' parts{end}];
 % SD190719A_Ketamine_Day03_20190722_1251
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
-% used in all runs before 20190815 at about 5 pm
-%{'2019_7_24_13_24_41_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
 
-% New ones to try
-%                     '2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_27_14_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_27_29_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_27_34_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_27_54_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_29_5_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_29_0_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'; last one tested                 
-%                    '2019_7_24_13_28_25_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-%                    '2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';};
-
-muxFileNames    = {'2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'};
-rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
+muxFileNames    = {'2019_7_24_12_32_52_1_2097152_5_smpls_raw.mat'};
+rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1217.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
 
@@ -91,33 +78,20 @@ dataStructure(11:16) = [];
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
-rejectMod =  1.7;%1.7;
+rejectMod =  1.8;
 ARP       = .001;
-threshold =  -3.5; %-7.5;%-2.8;   % -3.5
-voltORrms = 1; % select rms (1) for Ripple
+threshold = -2.8;%-3.5;
 [~, totalChannels] = size(dataStructure);
-jjj = 1; % Counter for mux ISI Array
-dataStructureMuxISI(16).ISI = []; % Initialize structure for appending
 for ii = 1:totalChannels
-    % If mux, grab the threshold value of the same Ripple channel and set
-    % threshold to a voltage value. Eventually fix all of this to do input
-    % parsing
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        threshold = dataStructure( dataStructure(ii).electrode ).thresholdVal ;
-        voltORrms = 0;
-        templateWaveform = dataStructure( dataStructure(ii).electrode ).meanWave;
-    else
-        templateWaveform = [];
-    end
- 
- [dataStructure(ii).waveforms, dataStructure(ii).timeWave, ...
-  dataStructure(ii).waveformSorted, spikeEventsNew, ~, dataStructure(ii).thresholdVal] = ...
-     spikeSortBlock( ...
-                    dataStructure(ii).filteredData, ...
-                    dataStructure(ii).Fs, ...
-                    threshold, ...
-                    rejectMod, ...
-                    ARP, voltORrms, templateWaveform );                   
+ [ dataStructure(ii).waveforms, ...
+   dataStructure(ii).timeWave, ...
+   dataStructure(ii).waveformSorted,...
+   spikeEventsNew ] = ...
+     spikeSortBlock( dataStructure(ii).filteredData, ...
+                     dataStructure(ii).Fs, ...
+                     threshold, ...
+                     rejectMod, ...
+                     ARP );                   
     dataStructure(ii).meanWave = mean(dataStructure(ii).waveformSorted);
     dataStructure(ii).spikeTimes = dataStructure(ii).time(spikeEventsNew);
 end
@@ -127,19 +101,15 @@ figSpaceArray = zeros(1,2);
 for ii = 1:totalChannels
     figNum = dataStructure(ii).electrode;
     figure(dataStructure(ii).figIndex)
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        plot(dataStructure(ii).time, dataStructure(ii).rawData + ...
-           1000*(dataStructure(ii).electrode - 1), 'k');  
-    else
+  
     plot(dataStructure(ii).time, dataStructure(ii).rawData + ...
          1000*(figSpaceArray( dataStructure(ii).figIndex )), 'k');
-
-    end
     hold on
     title(dataStructure(ii).instrument)
     xlim([0 3.5])
     ylabel('Amplitude (uV)')
     xlabel('Time (s)')
+    
     figSpaceArray( dataStructure(ii).figIndex ) = ...
         figSpaceArray( dataStructure(ii).figIndex ) + 1; % counter for spacing
 end
@@ -152,19 +122,11 @@ for ii = 1:totalChannels
     figNum = dataStructure(ii).electrode;
     figure(dataStructure(ii).figIndex + 2)
 
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
-             40*(dataStructure(ii).electrode - 1), 'k')
-        hold on
-        plotRaster( gcf, dataStructure(ii).spikeTimes, ...
-                'lineCenter', (40*(dataStructure(ii).electrode - 1)) - 20, 'lineHeight', 4)
-    else
         plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
              40*(figSpaceArray( dataStructure(ii).figIndex )), 'k')
         hold on
         plotRaster( gcf, dataStructure(ii).spikeTimes, ...
-                'lineCenter', (40*(figSpaceArray( dataStructure(ii).figIndex ))) - 20, 'lineHeight', 4)
-    end
+                'lineCenter', (40*(figSpaceArray( dataStructure(ii).figIndex ))) - 20, 'lineHeight', 5)
 
     title(dataStructure(ii).instrument)
     xlim([0 3.5])

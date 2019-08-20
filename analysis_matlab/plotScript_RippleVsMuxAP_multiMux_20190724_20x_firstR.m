@@ -68,7 +68,8 @@ for ii = 1:numChannelsRip
 end
 
 % Prepare Mux Data
-[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames);
+muxThreshColor = [1 1 1];
+[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames, muxThreshColor);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.

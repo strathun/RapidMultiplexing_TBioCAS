@@ -1,9 +1,7 @@
-%% Experiment: RippleVsMuxAp
+%% Results: Variable Slice Allocation 
 % Combines detected waveforms from multiple multiplexing runs to approach
-% 30s of mux data. Raw and spike filtered data are plotted from each run as
-% a gut check to the user to make sure none of the channels look
-% particularly bad.
-% This is for the second round of mux/Ripple measurements at 10x
+% 30s of mux data. 
+% This is for data recorded 20190730
 
 close all 
 clearvars 
@@ -21,8 +19,8 @@ outputDir = ['../output/' parts{end}];
 %% Color Pallette
 rippleMeanColor = 'k';
 rippleThreshColor = [.5 .5 .5];
-muxMeanColor = [0 131 232]./256;%[0 144 255]./256;% tropical rain forest%[0 127 232]./256; % azure % [4 138 129]./256;
-muxThreshColor = [112 197 246]./256; %[72 169 163]./256;
+muxMeanColor = [0 144 255]./256;% tropical rain forest%[0 127 232]./256; % azure % [4 138 129]./256;
+muxThreshColor = [46 164 255]./256; %[72 169 163]./256;
 
 
 
@@ -40,24 +38,30 @@ muxThreshColor = [112 197 246]./256; %[72 169 163]./256;
 % SD190719A_Ketamine_Day03_20190722_1251
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
+% From 7/24
+muxFileNames = {'2019_7_24_12_40_31_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat';
+                '2019_7_24_12_40_41_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat';
+                '2019_7_24_12_40_51_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat';
+                '2019_7_24_12_40_56_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat';
+                '2019_7_24_12_41_0_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat';
+                '2019_7_24_12_41_5_16_2097152_5_5_2_2_2_2_2_2_1_1_1_6_6_6_6_6_smpls_raw.mat'};
 
-muxFileNames    = {'2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_14_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_29_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_34_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_54_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_29_5_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_29_0_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_28_25_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';}; 
-% Started with 11 recordings;
-% Removed:
-% '2019_7_24_13_25_1_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
-% '2019_7_24_13_24_41_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
-% '2019_7_24_13_28_35_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat;
-% Added :
-% 2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat
-               
+% % 7/30 potentially usable
+% muxFileNames = {'2019_7_30_10_51_36_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_51_41_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_51_46_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_51_51_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_51_56_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_52_1_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_52_6_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_52_11_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_52_16_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat'};
+
+% % 7/30 Best
+% muxFileNames = {
+%                 '2019_7_30_10_51_51_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat';
+%                 '2019_7_30_10_51_56_20_2097152_5_5_2_2_2_2_2_2_1_1_1_1_6_6_6_6_6_6_6_6_smpls_raw.mat'};
+                
 rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
@@ -92,7 +96,8 @@ for ii = 1:numChannelsRip
 end
 
 % Prepare Mux Data
-[dataStructure, numChannelsMux, muxChannelOrder] = multiMuxCombine(dataStructure, muxFileNames, muxThreshColor);
+[dataStructure, numChannelsMux, muxChannelOrder, sliceAllocation] = ...
+    multiMuxCombine_variableSlice(dataStructure, muxFileNames, muxThreshColor);
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
@@ -103,6 +108,7 @@ voltORrms = 1; % select rms (1) for Ripple
 [~, totalChannels] = size(dataStructure);
 jjj = 1; % Counter for mux ISI Array
 dataStructureMuxISI(16).ISI = []; % Initialize structure for appending
+offsetArray = zeros(1, 16); % for plotting spike filtered data
 for ii = 1:totalChannels
     % If mux, grab the threshold value of the same Ripple channel and set
     % threshold to a voltage value. Eventually fix all of this to do input
@@ -110,7 +116,13 @@ for ii = 1:totalChannels
     if strcmp(dataStructure(ii).instrument, 'Mux')
         threshold = dataStructure( dataStructure(ii).electrode ).thresholdVal ;
         voltORrms = 0;
-        templateWaveform = dataStructure( dataStructure(ii).electrode ).meanWave;
+        % Have to get fancy and interpolate because of different Fs
+        muxTime = (0.00:(1/37.5e3):0.0016 );
+        muxTime = muxTime(1:end-1);
+        templateWaveform = interp1( ...
+            dataStructure( dataStructure(ii).electrode ).timeWave, ...
+            dataStructure( dataStructure(ii).electrode ).meanWave, ...
+             muxTime);
     else
         templateWaveform = [];
     end
@@ -136,6 +148,23 @@ for ii = 1:totalChannels
             [dataStructureMuxISI(dataStructure(ii).electrode).ISI ...
             diff(dataStructure(ii).spikeTimes*(1e3))];
     end
+    [dataStructure(ii).choppedData, dataStructure(ii).fat] = ...
+        spikeChopper(dataStructure(ii).filteredData, ...
+                     dataStructure(ii).spikeTimes.', ...
+                     dataStructure(ii).Fs, ...
+                     'Threshold',1.6);
+     dataStructure(ii).noiseFloor = rms(dataStructure(ii).choppedData);
+     
+     % Plot spike-filtered waveforms for Mux only
+     if strcmp(dataStructure(ii).instrument, 'Mux')
+        figure(dataStructure(ii).electrode + 500)
+        plot(dataStructure(ii).time, dataStructure(ii).filteredData + ...
+            ( 40 * offsetArray( dataStructure(ii).electrode ) ) )
+        hold on
+        %Counter for offsets
+        offsetArray( dataStructure(ii).electrode ) = ...
+            offsetArray( dataStructure(ii).electrode ) + 1;
+     end
 end
 
 %%
@@ -184,7 +213,7 @@ for ii = 1:numChannelsMux
     
     [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
             dataStructure(ii).waveformSorted, numSTDs);
-        plot(dataStructure(totalChannels).timeWave*1e3, ...
+        plot(dataStructure(ii).timeWave*1e3, ...
              meanTrace, 'color', rippleMeanColor, 'LineWidth', 3.5)
         hold on
 %         plot( dataStructure(totalChannels).timeWave*1e3, highTrace, 'k--', 'LineWidth', 2.5)
@@ -195,7 +224,7 @@ for ii = 1:numChannelsMux
 end
 
 % Gross mess to combine all of the waveforms for matching mux channels from
-% different runs so that we can take the mean
+% different runs so that we can take the mean. 
 muxAPCellArray = cell(1, 16);
 for ii = 1:totalChannels
     if strcmp(dataStructure(ii).instrument, 'Mux')
@@ -223,9 +252,23 @@ for ii = 1:length(muxChannelOrder)
 %     plot( dataStructure(totalChannels).timeWave*1e3, highTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
 %     plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
 
-% Calculate SNR and pkpk value for mux
-  [SNRKellyMux(figNum)] = snrKelly(muxAPCellArray{figNum});
+% Calculate SNR and pkpk value for mux and generate seperate data structure
+   dataStructureMuxCumAP(ii).electrode = figNum;
+   [dataStructureMuxCumAP(ii).snrKelly, ...
+    dataStructureMuxCumAP(ii).waveformSD] = ...
+                    snrKelly(muxAPCellArray{figNum});
+   dataStructureMuxCumAP(ii).pkpkAmp = max(meanTrace) - min(meanTrace);
+   dataStructureMuxCumAP(ii).waveformSorted = muxAPCellArray{figNum};
+   dataStructureMuxCumAP(ii).meanWave = meanTrace;
+   dataStructureMuxCumAP(ii).sliceAllocation = sliceAllocation(ii);
+   dataStructureMuxCumAP(ii).highTrace = highTrace;
+   dataStructureMuxCumAP(ii).lowTrace = lowTrace;
+   
+   % These are just for troubleshooting here. Eventually remove after
+   % verification
+  [SNRKellyMux(figNum), waveformSD] = snrKelly(muxAPCellArray{figNum});
   pkpkAmpMux(figNum) = max(meanTrace) - min(meanTrace);
+  
 end
 
 % Close excess figures

@@ -1,9 +1,8 @@
 %% PlotScript: Scrambled AP Mux
-% This is to generate the mean waveforms for mux order 1 to test whether AP
+% This is to generate the mean waveforms for mux order 2 to test whether AP
 % waveform is preserved for different mux orders. 
 % Data is from 07/30/2019 under ketamine anesthesia
-% Note: Cumulative waveforms generated from this script were saved and then
-% are loaded in _Order2 for comparison. 
+% Copy of plotScript_scrambledAPMux_Order2.m
 
 close all 
 clearvars 
@@ -19,15 +18,15 @@ outputDir = ['../output/' parts{end}];
 [~, ~] = mkdir(outputDir);
 
 %% 
-muxFileNames    = {'2019_7_30_10_25_50_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_25_54_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_25_59_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_4_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_9_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_14_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_19_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_24_4_2097152_5_2_1_6_smpls_raw.mat';
-                   '2019_7_30_10_26_29_4_2097152_5_2_1_6_smpls_raw.mat'};
+muxFileNames    = {'2019_7_30_10_27_7_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_12_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_17_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_22_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_27_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_32_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_37_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_42_4_2097152_5_6_1_2_smpls_raw.mat';
+                   '2019_7_30_10_27_46_4_2097152_5_6_1_2_smpls_raw.mat'};
 
 
 %% Filter Data
@@ -102,14 +101,25 @@ for ii = 1:length(muxChannelOrder)
     figure(100 + figNum)
     % Second plot for array cartoon
     plot(dataStructure(totalChannels).timeWave*1e3, ...
-         meanTrace, 'color', traceColor, 'LineWidth', 3.5)
+         meanTrace, 'LineWidth', 3.5)
      hold on
      ylim([ -30 30])
-     set(gcf, 'Position',  [50, 100, 200, 300])
+%      set(gcf, 'Position',  [50, 100, 200, 300])
 %     plot( dataStructure(totalChannels).timeWave*1e3, highTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
 %     plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
 end
 
-
+% Plot mean waves from _Order 1
+load('muxAPCellArray_Order1_revOrder.mat')
+for ii = 1:16
+    if ~isempty( muxAPCellArray{ii} )
+        [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
+            muxAPCellArray{ii}, numSTDs);
+        figure(100 + ii)
+        plot(dataStructure(totalChannels).timeWave*1e3, ...
+            meanTrace, 'LineWidth', 3.5)
+        legend('Order 2', 'Order 1')
+    end
+end
 %%
 % 

@@ -44,6 +44,6 @@ plot(spikeEvents, tickSizeArray)
 
 %% Plot Raster
 figure(figureHandle)
-plot( spikeEvents, tickSizeArray, 'k' );
+plot( spikeEvents, tickSizeArray, 'b' );
 end
 

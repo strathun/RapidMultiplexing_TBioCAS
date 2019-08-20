@@ -1,4 +1,9 @@
-%% Experiment: RippleVsMuxAp
+%% copy of results_RippleVsMux_actionPotentials.m 
+% Used to test whether differences in ISI are result of signals being
+% burried or differences in brain states
+% This will give a good demonstration of improving a single channel using
+% actual multiplexing M=2 and one of the slice allocations from the scheme
+% <-- not true.
 % Combines detected waveforms from multiple multiplexing runs to approach
 % 30s of mux data. Raw and spike filtered data are plotted from each run as
 % a gut check to the user to make sure none of the channels look
@@ -22,7 +27,7 @@ outputDir = ['../output/' parts{end}];
 rippleMeanColor = 'k';
 rippleThreshColor = [.5 .5 .5];
 muxMeanColor = [0 131 232]./256;%[0 144 255]./256;% tropical rain forest%[0 127 232]./256; % azure % [4 138 129]./256;
-muxThreshColor = [112 197 246]./256; %[72 169 163]./256;
+muxThreshColor = [46 164 255]./256; %[72 169 163]./256;
 
 
 
@@ -40,16 +45,27 @@ muxThreshColor = [112 197 246]./256; %[72 169 163]./256;
 % SD190719A_Ketamine_Day03_20190722_1251
 % SD190719A_Day05_Ketamine_20190724_1217
 %%%
+% E03
+% muxFileNames    = {'2019_7_24_12_31_53_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_32_37_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_32_42_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_32_47_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_32_52_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_32_56_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_33_1_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_33_6_1_2097152_5_smpls_raw.mat';
+%                    '2019_7_24_12_33_10_1_2097152_5_smpls_raw.mat';}; 
 
-muxFileNames    = {'2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_14_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_29_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_34_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_27_54_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_29_5_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_29_0_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_28_25_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';
-                   '2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat';}; 
+muxFileNames    = {'2019_7_30_10_23_50_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_23_57_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_24_4_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_24_10_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_24_17_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_23_16_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_23_23_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_23_29_2_2097152_5_2_smpls_raw.mat';
+                   '2019_7_30_10_23_36_2_2097152_5_2_smpls_raw.mat';}; 
+
 % Started with 11 recordings;
 % Removed:
 % '2019_7_24_13_25_1_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat'
@@ -58,7 +74,7 @@ muxFileNames    = {'2019_7_24_13_24_56_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw
 % Added :
 % 2019_7_24_13_28_30_10_2097152_3_4_5_2_1_6_0_7_15_8_smpls_raw.mat
                
-rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1313.ns5';
+rippleFileName = 'SD190719A_Day05_Ketamine_20190724_1217.ns5';
 hpCornerFreq   =  750;
 lpCornerFreq   = 4000;
 
@@ -96,33 +112,21 @@ end
 
 %% Spike Sorting
 % First detect, then grab threshold crossing events.
-rejectMod =  1.7; % 1.8;   % 1.7
+rejectMod =  1.8;   % 1.7
 ARP       = .001;
-threshold =  -3.0;%-3.0; %-7.5;%-2.8;   % -3.5
-voltORrms = 1; % select rms (1) for Ripple
+threshold = -2.8;   % -3.5
 [~, totalChannels] = size(dataStructure);
-jjj = 1; % Counter for mux ISI Array
 dataStructureMuxISI(16).ISI = []; % Initialize structure for appending
 for ii = 1:totalChannels
-    % If mux, grab the threshold value of the same Ripple channel and set
-    % threshold to a voltage value. Eventually fix all of this to do input
-    % parsing
-    if strcmp(dataStructure(ii).instrument, 'Mux')
-        threshold = dataStructure( dataStructure(ii).electrode ).thresholdVal ;
-        voltORrms = 0;
-        templateWaveform = dataStructure( dataStructure(ii).electrode ).meanWave;
-    else
-        templateWaveform = [];
-    end
- 
+
  [dataStructure(ii).waveforms, dataStructure(ii).timeWave, ...
-  dataStructure(ii).waveformSorted, spikeEventsNew, ~, dataStructure(ii).thresholdVal] = ...
+  dataStructure(ii).waveformSorted, spikeEventsNew] = ...
      spikeSortBlock( ...
                     dataStructure(ii).filteredData, ...
                     dataStructure(ii).Fs, ...
                     threshold, ...
                     rejectMod, ...
-                    ARP, voltORrms, templateWaveform );                   
+                    ARP );                   
     dataStructure(ii).meanWave = mean(dataStructure(ii).waveformSorted);
     dataStructure(ii).spikeTimes = dataStructure(ii).time(spikeEventsNew);
     dataStructure(ii).ISI = diff(dataStructure(ii).spikeTimes*(1e3));
