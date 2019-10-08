@@ -33,6 +33,8 @@ function [waveforms, timeWave, waveformSorted, spikeEventsNew, Vrms, thresholdVa
 [waveforms, timeWave, spikesIndex] = ...
     waveformGrabber(spikeFilteredData, ...
                     spikesIndex, 1.6, Fs); % Must be more than two spike events
+%                     spikesIndex, 3.0, Fs); % Use for testing to see if spikes are noise    
+                    
 
 %% Removes "bad" Spikes
 

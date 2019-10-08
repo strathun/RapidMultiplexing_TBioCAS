@@ -1,4 +1,9 @@
+__________
+2019-09-20
 
+	Starting some work on revisions. Trying to understand why it looks like we only have one waveform shape for each electrode. Been playing with PCA and the 0509 animal, it definitely looks like we had multiple waveforms on the day of insertion. For whatever reason, this does not seem to be the case for the second animal.
+	
+	NOTE: old cerebusLoader function used filter, not filtfilt. This seems to dramatically affect the shape of the waveform. Peak moves from right to left of the trough.
 __________
 2019-08-15-16
 
