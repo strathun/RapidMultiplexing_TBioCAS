@@ -138,101 +138,106 @@ for ii = 1:totalChannels
     end
 end
 
-% %%
-% % Generate list used to close figures without Ripple and Mux data
-% figsToClose = 1:1:16;
-% 
-% % Plot APs
-% for ii = 1:totalChannels
-%     figNum = dataStructure(ii).electrode;
-%     figure(figNum)
-%     try
-%         [numTraces, ~] = size(dataStructure(ii).waveformSorted);
-%         for jj = 1:numTraces    % Have to do it this gross way to do transparency
-%             plot1 = plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted(jj,:), ...
-%                 '--', 'Color', dataStructure(ii).threshColor, ...
-%                 'LineWidth', 0.5 );
-%             plot1.Color(4) = 1.0;   % Sets transparency
-%             hold on
-%         end
-%     catch
-%         warning('No action potentials detected for E%d', dataStructure(ii).electrode)
-%     end
-%         if strcmp(dataStructure(ii).instrument, 'Ripple')
-%             % Second plot for array cartoon
-%             figure(figNum + 100)
-%             plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, ...
-%                 'LineWidth', 3.5, 'Color', dataStructure(ii).meanColor)
-%             hold on
-%         end
-% 
-%     ylim([ -40 40])
-%     title(dataStructure(ii).instrument)
-%     ylabel('Amplitude (uV)')
-%     xlabel('Time (ms)')
-%     if strcmp(dataStructure(ii).instrument, 'Mux')
-%         % Remove from list of figures to close if Mux data is present
-%         figsToClose = figsToClose(find(figsToClose~=figNum));
-%     end
-% end
-% 
-% % Plot mean AP (Ripple)
-% numSTDs = 1;
-% for ii = 1:numChannelsMux
-%     figNum = dataStructure(ii).electrode;
-%     figure(figNum)
-%     
-%     [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
-%             dataStructure(ii).waveformSorted, numSTDs);
-%         plot(dataStructure(totalChannels).timeWave*1e3, ...
-%              meanTrace, 'color', rippleMeanColor, 'LineWidth', 3.5)
-%         hold on
-% %         plot( dataStructure(totalChannels).timeWave*1e3, highTrace, 'k--', 'LineWidth', 2.5)
-% %         plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, 'k--', 'LineWidth', 2.5)
-%     ylim([ -30 30])
-%     ylabel('Amplitude (uV)')
-%     xlabel('Time (ms)')
-% end
-% 
-% % Gross mess to combine all of the waveforms for matching mux channels from
-% % different runs so that we can take the mean
-% muxAPCellArray = cell(1, 16);
-% for ii = 1:totalChannels
-%     if strcmp(dataStructure(ii).instrument, 'Mux')
-%         muxAPCellArray{dataStructure(ii).electrode} = ...
-%             [muxAPCellArray{dataStructure(ii).electrode}; dataStructure(ii).waveformSorted];
-%     end
-% end
-% 
-% % Plot cumulative meanwaves
-% for ii = 1:length(muxChannelOrder)
-% %     traceColor = [1 0 0]; % Pure Red; [0.9290, 0.6940, 0.1250]; % Matlab gold %[0.6350 0.0780 0.1840]; %[0 0.4470 0.7410]; % Better blue than 'blue'
-%     figNum = muxChannelOrder(ii);
-%     figure(figNum)
-%     [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
-%         muxAPCellArray{figNum}, numSTDs);
-%     plot(dataStructure(totalChannels).timeWave*1e3, ...
-%          meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
-%     figure(100 + figNum)
-%     % Second plot for array cartoon
-%     plot(dataStructure(totalChannels).timeWave*1e3, ...
-%          meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
-%      hold on
-%      ylim([ -30 30])
-%      set(gcf, 'Position',  [50, 100, 200, 300])
-% %     plot( dataStructure(totalChannels).timeWave*1e3, highTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
-% %     plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
-% 
-% % Calculate SNR and pkpk value for mux
-%   [SNRKellyMux(figNum)] = snrKelly(muxAPCellArray{figNum});
-%   pkpkAmpMux(figNum) = max(meanTrace) - min(meanTrace);
-% end
-% 
-% % Close excess figures
-% for ii = 1:length(figsToClose)
-%     figure(figsToClose(ii))
-%     close
-% end
+%%
+% Generate list used to close figures without Ripple and Mux data
+figsToClose = 1:1:16;
+
+% Plot APs
+for ii = 1:totalChannels
+    figNum = dataStructure(ii).electrode;
+    figure(figNum)
+    try
+        [numTraces, ~] = size(dataStructure(ii).waveformSorted);
+        for jj = 1:numTraces    % Have to do it this gross way to do transparency
+            plot1 = plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).waveformSorted(jj,:), ...
+                '--', 'Color', dataStructure(ii).threshColor, ...
+                'LineWidth', 0.5 );
+            plot1.Color(4) = 1.0;   % Sets transparency
+            hold on
+        end
+    catch
+        warning('No action potentials detected for E%d', dataStructure(ii).electrode)
+    end
+        if strcmp(dataStructure(ii).instrument, 'Ripple')
+            % Second plot for array cartoon
+            figure(figNum + 100)
+            plot(dataStructure(ii).timeWave*1e3, dataStructure(ii).meanWave, ...
+                'LineWidth', 3.5, 'Color', dataStructure(ii).meanColor)
+            hold on
+        end
+
+    ylim([ -40 40])
+    title(dataStructure(ii).instrument)
+    ylabel('Amplitude (uV)')
+    xlabel('Time (ms)')
+    if strcmp(dataStructure(ii).instrument, 'Mux')
+        % Remove from list of figures to close if Mux data is present
+        figsToClose = figsToClose(find(figsToClose~=figNum));
+    end
+end
+
+% Plot mean AP (Ripple)
+numSTDs = 1;
+for ii = 1:numChannelsMux
+    figNum = dataStructure(ii).electrode;
+    figure(figNum)
+    
+    [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
+            dataStructure(ii).waveformSorted, numSTDs);
+        plot(dataStructure(totalChannels).timeWave*1e3, ...
+             meanTrace, 'color', rippleMeanColor, 'LineWidth', 3.5)
+        hold on
+%         plot( dataStructure(totalChannels).timeWave*1e3, highTrace, 'k--', 'LineWidth', 2.5)
+%         plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, 'k--', 'LineWidth', 2.5)
+    ylim([ -30 30])
+    ylabel('Amplitude (uV)')
+    xlabel('Time (ms)')
+end
+
+% Gross mess to combine all of the waveforms for matching mux channels from
+% different runs so that we can take the mean
+muxAPCellArray = cell(1, 16);
+for ii = 1:totalChannels
+    if strcmp(dataStructure(ii).instrument, 'Mux')
+        muxAPCellArray{dataStructure(ii).electrode} = ...
+            [muxAPCellArray{dataStructure(ii).electrode}; dataStructure(ii).waveformSorted];
+    end
+end
+
+% Plot cumulative meanwaves
+meanCounter = 1; % Counter JUST FOR storing means
+for ii = 1:length(muxChannelOrder)
+%     traceColor = [1 0 0]; % Pure Red; [0.9290, 0.6940, 0.1250]; % Matlab gold %[0.6350 0.0780 0.1840]; %[0 0.4470 0.7410]; % Better blue than 'blue'
+    figNum = muxChannelOrder(ii);
+    figure(figNum)
+    [ meanTrace, highTrace, lowTrace ] = genSTDTraces( ...
+        muxAPCellArray{figNum}, numSTDs);
+    plot(dataStructure(totalChannels).timeWave*1e3, ...
+         meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
+    figure(100 + figNum)
+    % Second plot for array cartoon
+    plot(dataStructure(totalChannels).timeWave*1e3, ...
+         meanTrace, 'color', muxMeanColor, 'LineWidth', 3.5)
+     hold on
+     ylim([ -30 30])
+     set(gcf, 'Position',  [50, 100, 200, 300])
+%     plot( dataStructure(totalChannels).timeWave*1e3, highTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
+%     plot( dataStructure(totalChannels).timeWave*1e3, lowTrace, '--', 'color', traceColor, 'LineWidth', 2.5)
+
+% Calculate SNR and pkpk value for mux
+  [SNRKellyMux(figNum)] = snrKelly(muxAPCellArray{figNum});
+  pkpkAmpMux(figNum) = max(meanTrace) - min(meanTrace);
+% Store mean for analysis
+  muxMeanStructure(meanCounter).electrode = figNum;
+  muxMeanStructure(meanCounter).meanTrace = meanTrace;
+  meanCounter = meanCounter + 1;
+end
+
+% Close excess figures
+for ii = 1:length(figsToClose)
+    figure(figsToClose(ii))
+    close
+end
 % 
 % %% ISI
 % % Plot ISI data for RIpple
@@ -271,5 +276,13 @@ end
 %     end
 % end
 
+%% Calculate percent error between AP waveforms
+numTraces = length( muxMeanStructure );
+for ii = 1:numTraces
+    jj = muxChannelOrder(ii);
+    diffVector(ii,:) = abs(dataStructure(jj).meanWave - muxMeanStructure(ii).meanTrace);
+    percentDiff(ii,:) = abs( diffVector(ii,:)./dataStructure(jj).meanWave ) * 100;
+    avgDiffArray(ii,:) = mean(percentDiff(ii,:));
+end
 %%
 % Still not perfect. Maybe some sort of fill will look better?
