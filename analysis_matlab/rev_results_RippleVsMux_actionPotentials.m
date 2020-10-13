@@ -284,5 +284,13 @@ for ii = 1:numTraces
     percentDiff(ii,:) = abs( diffVector(ii,:)./dataStructure(jj).meanWave ) * 100;
     avgDiffArray(ii,:) = mean(percentDiff(ii,:));
 end
+%% Calculate "Percent RMS Agreement"
+numTraces = length( muxMeanStructure );
+for ii = 1:numTraces
+    jj = muxChannelOrder(ii);
+    diffRMSVector(ii,:) = rms(dataStructure(jj).meanWave) - rms(muxMeanStructure(ii).meanTrace);
+    percentRMSDiff(ii,:) = abs( diffRMSVector(ii,:)./rms(dataStructure(jj).meanWave) ) * 100;
+    avgRMSDiffArray(ii,:) = mean(percentRMSDiff(ii,:));
+end
 %%
 % Still not perfect. Maybe some sort of fill will look better?
